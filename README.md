@@ -48,6 +48,22 @@ echo "Build the login page" | dfr $ID write plan.md
 
 ## CLI usage
 
+### Things
+
+```shell
+dfr list       # List all things with their IDs. Hides finished things.
+dfr $ID done   # Mark the thing as finished.
+dfr $ID log    # Show which session changed which file, and when.
+```
+
+### Read
+
+```shell
+dfr $ID read [FILENAME]   # Show one file.
+dfr $ID read:all          # Show the content of all files, in order.
+dfr $ID read:all --fm     # Show only the frontmatter of each file. Also --frontmatter.
+```
+
 ### Write
 
 ```shell
@@ -72,11 +88,25 @@ dfr $ID fm:add [FILENAME] [YAML]  # Add or replace the given attributes. Keeps t
 A todo list is a title or a text line in a file, followed by one or more Markdown todo items. The title must be unique.
 
 ```shell
+dfr $ID todo [NAME] add [ITEM...]
+```
+
+The name of the todo list is optional.
+
+- With a name, the command looks only in that todo list.
+- Without a name, the command looks in all todo lists. Each argument must then match one unique line across all lists.
+- Without a name, `add` and `next` need exactly one todo list in the thing. If there are more, the command fails.
+
+Examples:
+
+```shell
 dfr $ID todo "Setup" add "Define dependencies" "Install packages" "Run build command"
 dfr $ID todo "Setup" add:after "install" "Verify installation"
 dfr $ID todo "Setup" add:before "build" "Verify installation"
 dfr $ID todo "Setup" tick "deps" "install" "build"
 dfr $ID todo "Setup" untick "deps" "install" "build"
+dfr $ID todo "Setup" next
+dfr $ID todo tick "install"
 ```
 
 - `add` adds the items to the end of the list.
@@ -84,6 +114,7 @@ dfr $ID todo "Setup" untick "deps" "install" "build"
 - `add:before` adds the items before the matching item.
 - `tick` ticks each matching item.
 - `untick` unticks each matching item.
+- `next` shows the first item that is not ticked.
 
 Each argument must match one unique line. If one argument does not match, the command fails and changes nothing.
 
@@ -92,7 +123,6 @@ Each argument must match one unique line. If one argument does not match, the co
 ```shell
 dfr $ID files              # List the files.
 dfr $ID files:reorder      # Put the files in a new order.
-dfr $ID files:content      # Show the content of all files, in order.
 dfr $ID files:archive      # Archive the given files.
 ```
 
