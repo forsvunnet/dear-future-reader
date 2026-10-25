@@ -6,11 +6,15 @@ namespace Domain\Dfr\Livewire;
 
 use Domain\Dfr\Actions\AppendLog;
 use Domain\Dfr\Actions\OrderedFiles;
+use Domain\Dfr\Actions\ParseTodoLists;
 use Domain\Dfr\Actions\ReadThing;
+use Domain\Dfr\Actions\RenderBody;
 use Domain\Dfr\Actions\SaveFileIfUnchanged;
 use Domain\Dfr\Actions\SplitFrontmatter;
+use Domain\Dfr\Actions\ToggleTodoItem;
 use Domain\Dfr\Data\LogEntry;
 use Domain\Dfr\Data\Thing;
+use Domain\Dfr\Data\TodoList;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
@@ -37,6 +41,10 @@ class ThingPage extends Component
 
     public ?string $error = null;
 
+    /** The reason the last tick from the browser failed. */
+    #[Locked]
+    public ?string $tickError = null;
+
     private ReadThing $readThing;
 
     private OrderedFiles $orderedFiles;
@@ -47,6 +55,12 @@ class ThingPage extends Component
 
     private AppendLog $appendLog;
 
+    private ParseTodoLists $parseTodoLists;
+
+    private RenderBody $renderBody;
+
+    private ToggleTodoItem $toggleTodoItem;
+
     // Livewire makes the component itself, so the dependencies come in through boot instead of the constructor.
     public function boot(
         ReadThing $readThing,
@@ -54,12 +68,18 @@ class ThingPage extends Component
         SplitFrontmatter $splitFrontmatter,
         SaveFileIfUnchanged $saveFile,
         AppendLog $appendLog,
+        ParseTodoLists $parseTodoLists,
+        RenderBody $renderBody,
+        ToggleTodoItem $toggleTodoItem,
     ): void {
         $this->readThing = $readThing;
         $this->orderedFiles = $orderedFiles;
         $this->splitFrontmatter = $splitFrontmatter;
         $this->saveFile = $saveFile;
         $this->appendLog = $appendLog;
+        $this->parseTodoLists = $parseTodoLists;
+        $this->renderBody = $renderBody;
+        $this->toggleTodoItem = $toggleTodoItem;
     }
 
     public function edit(string $fileName): void
@@ -113,19 +133,62 @@ class ThingPage extends Component
         $this->cancel();
     }
 
+    /**
+     * @param  int  $line  The index of the line of the todo item in the file.
+     * @param  string  $hash  The sha1 of the file when the page loaded.
+     */
+    public function tick(string $fileName, int $line, string $hash): void
+    {
+        $thing = $this->thing();
+
+        // Only a file in the list can change, so the name cannot point outside the folder of the thing.
+        if (! in_array($fileName, ($this->orderedFiles)($thing), true)) {
+            $this->tickError = "$fileName is not a file of this thing.";
+
+            return;
+        }
+
+        $result = ($this->toggleTodoItem)($thing, $fileName, $line, $hash);
+        $this->tickError = $result->errors[0] ?? null;
+
+        if ($result->items === []) {
+            return;
+        }
+
+        ($this->appendLog)($thing, new LogEntry(
+            time: gmdate('Y-m-d\TH:i:s\Z'),
+            session: 'web',
+            command: $result->items[0]->ticked ? 'todo untick' : 'todo tick',
+            arguments: [$result->items[0]->text],
+            exitCode: 0,
+        ));
+    }
+
     public function render(): View
     {
         $thing = $this->thing();
         $documents = [];
+        $bodies = [];
+        $progress = [];
 
         foreach (($this->orderedFiles)($thing) as $fileName) {
-            $documents[$fileName] = ($this->splitFrontmatter)((string) file_get_contents("$thing->folder/$fileName"));
+            $content = (string) file_get_contents("$thing->folder/$fileName");
+            $documents[$fileName] = ($this->splitFrontmatter)($content);
+
+            $items = array_merge(...array_map(fn (TodoList $list) => $list->items, ($this->parseTodoLists)($fileName, $content)));
+            $bodies[$fileName] = ($this->renderBody)($fileName, $content, $items);
+
+            if ($items !== []) {
+                $progress[$fileName] = count(array_filter($items, fn ($item) => $item->ticked)).'/'.count($items);
+            }
         }
 
         return view('dfr::thing-page', [
             'thing' => $thing,
             'parent' => $thing->parent === null ? null : ($this->readThing)($thing->parent),
             'documents' => $documents,
+            'bodies' => $bodies,
+            'progress' => $progress,
         ])->title($thing->name);
     }
 

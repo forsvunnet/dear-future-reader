@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Domain\Dfr\Actions\BodyFirstLine;
 use Domain\Dfr\Actions\ParseTodoLists;
 use Domain\Dfr\Actions\SplitFrontmatter;
 use Domain\Dfr\Data\TodoList;
@@ -10,7 +11,7 @@ function parseTodoLists(string $content): array
 {
     return array_map(
         fn (TodoList $list) => [$list->title, array_map(fn ($item) => [$item->line, $item->text, $item->ticked], $list->items)],
-        (new ParseTodoLists(new SplitFrontmatter))('todo.md', $content),
+        (new ParseTodoLists(new BodyFirstLine(new SplitFrontmatter)))('todo.md', $content),
     );
 }
 

@@ -1,27 +1,26 @@
-<div>
-    <h1 class="dfr-title mb-6">Things</h1>
-
+{{-- The poll keeps the times and the order up to date while sessions work. --}}
+<nav aria-label="Things" wire:poll.30s>
     @if ($rows === [])
-        <p>There are no things. Make one with <code>dfr init "name"</code>.</p>
+        <p class="px-4 py-2">There are no things. Make one with <code>dfr init "name"</code>.</p>
     @else
-        <table class="w-full text-left">
-            <thead class="dfr-line border-b">
-                <tr>
-                    <th class="dfr-label py-2 pr-4">ID</th>
-                    <th class="dfr-label py-2 pr-4">Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($rows as $row)
-                    <tr class="dfr-line border-b">
-                        <td class="dfr-muted py-2 pr-4">{{ $row->thing->id }}</td>
-                        {{-- Each level of the tree has more indent. --}}
-                        <td class="py-2 pr-4" style="padding-left: {{ $row->depth * 2 }}ch">
-                            <a href="{{ route('dfr.thing', $row->thing->id) }}">{{ $row->thing->name }}</a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <ul>
+            @foreach ($rows as $row)
+                @php($time = \Illuminate\Support\Carbon::createFromTimestamp($times[$row->thing->id]))
+                <li class="dfr-line border-b">
+                    {{-- Each level of the tree has more indent. --}}
+                    <a
+                        href="{{ route('dfr.thing', $row->thing->id) }}"
+                        @if ($row->thing->id === $current) aria-current="page" @endif
+                        class="dfr-sidebar-link block py-2 pr-4"
+                        style="padding-left: calc(1rem + {{ $row->depth * 2 }}ch)"
+                    >
+                        <span class="block">{{ $row->thing->name }}</span>
+                        <span class="dfr-muted block">
+                            {{ $row->thing->id }} · <time datetime="{{ $time->toIso8601String() }}" title="{{ $time->toIso8601String() }}">{{ $time->diffForHumans() }}</time>
+                        </span>
+                    </a>
+                </li>
+            @endforeach
+        </ul>
     @endif
-</div>
+</nav>

@@ -177,13 +177,15 @@ php artisan serve
 
 Then open http://localhost:8000. Run `npm run build` first if `public/build/` does not exist.
 
-- The start page lists the things as a tree, with the ID and the name.
+- The sidebar lists the things as a tree, with the ID, the name and the time of the last command. The most recently active thing is first. A parent moves up when one of its children is active. The sidebar updates every 30 seconds.
 - The page of a thing shows its context files in order. The body shows as Markdown, and the frontmatter as YAML. Archived files do not show.
+- The header of a file with todo items shows how many are ticked, like `2/3`.
+- A click on the checkbox of a todo item ticks or unticks it. The click fails when the file changed after the page loaded. The page then shows the new content.
 - **Edit** opens the full content of a file, with its frontmatter. **Save** writes the file.
 
 Save fails when the file changed after you opened it, for example when a session wrote to it. Your text stays in the editor, so you can copy it.
 
-Each save writes a log line with the session `web`.
+Each save and each tick writes a log line with the session `web`.
 
 The Web UI has no login. `php artisan serve` listens only on your own machine.
 

@@ -45,6 +45,14 @@ Suggested filenames and content
 - `qa.md`: the questions and answers related to the work.
 - `goal.md`: the goal of the work.
 
+More files for each kind of work. Use them when the work is of that kind:
+
+- Planning: `constraints.md` for the limits, `options.md` for the possible paths.
+- Investigation: `question.md` for the question to answer, `facts.md` for what is known, `findings.md` for what the work finds.
+- Bug fix: `symptom.md` for what goes wrong, `reproduce.md` for the exact steps, `root-cause.md` for the cause.
+- Change of behaviour: `current-behaviour.md` and `wanted-behaviour.md`.
+- Code change: `blast-radius.md` for the code and behaviour that the change can affect, `verify.md` for the steps that prove the change works.
+
 Write the content through a pipe with a heredoc:
 
 ```shell

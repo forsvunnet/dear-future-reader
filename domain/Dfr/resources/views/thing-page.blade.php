@@ -16,6 +16,10 @@
         @endif
     </dl>
 
+    @if ($tickError !== null)
+        <p role="alert" class="dfr-danger mb-6">{{ $tickError }}</p>
+    @endif
+
     {{-- A session can archive or remove the open file. Keep the editor, so the text is not lost. --}}
     @if ($editing !== null && ! array_key_exists($editing, $documents))
         <section class="dfr-line mb-6 border">
@@ -29,7 +33,12 @@
     @foreach ($documents as $fileName => $document)
         <section wire:key="{{ $fileName }}" class="dfr-line mb-6 border">
             <header class="dfr-line flex items-center justify-between border-b px-4 py-2">
-                <h2>{{ $fileName }}</h2>
+                <h2>
+                    {{ $fileName }}
+                    @if (isset($progress[$fileName]))
+                        <span class="dfr-muted" title="Ticked todo items">{{ $progress[$fileName] }}</span>
+                    @endif
+                </h2>
                 @if ($editing !== $fileName)
                     <button type="button" wire:click="edit(@js($fileName))" class="dfr-button">Edit</button>
                 @endif
@@ -41,9 +50,9 @@
                 @if ($document->frontmatter !== null)
                     <pre class="dfr-line dfr-muted overflow-x-auto border-b px-4 py-2">{{ $document->frontmatter }}</pre>
                 @endif
-                {{-- HTML in a file is escaped, so it cannot run in the browser. --}}
+                {{-- RenderBody escapes HTML in a file, so it cannot run in the browser. --}}
                 <div class="dfr-markdown px-4 py-4">
-                    {!! str($document->body)->markdown(['html_input' => 'escape', 'allow_unsafe_links' => false]) !!}
+                    {!! $bodies[$fileName] !!}
                 </div>
             @endif
         </section>

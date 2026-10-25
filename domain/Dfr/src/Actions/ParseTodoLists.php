@@ -18,7 +18,7 @@ use Domain\Dfr\Data\TodoList;
 class ParseTodoLists
 {
     public function __construct(
-        private SplitFrontmatter $splitFrontmatter,
+        private BodyFirstLine $bodyFirstLine,
     ) {}
 
     /**
@@ -26,8 +26,7 @@ class ParseTodoLists
      */
     public function __invoke(string $fileName, string $content): array
     {
-        $body = ($this->splitFrontmatter)($content)->body;
-        $firstLine = substr_count(substr($content, 0, strlen($content) - strlen($body)), "\n");
+        $firstLine = ($this->bodyFirstLine)($content);
 
         $lists = [];
         $items = [];

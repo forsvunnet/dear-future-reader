@@ -78,6 +78,20 @@
     text-decoration: none;
 }
 
+/* A thing in the sidebar. The thing that the page shows has a line on the left. */
+.dfr-body a.dfr-sidebar-link {
+    text-decoration: none;
+    border-left: 2px solid transparent;
+}
+
+.dfr-body a.dfr-sidebar-link:hover {
+    border-left-color: var(--dfr-line);
+}
+
+.dfr-body a.dfr-sidebar-link[aria-current="page"] {
+    border-left-color: var(--dfr-fill);
+}
+
 /* A heading: the title of a page or a part of a page. */
 .dfr-title {
     text-transform: uppercase;
