@@ -60,3 +60,19 @@ it('reads nothing for a commit that the repository does not have', function () {
     expect((new ReadGitCommitHeaderWithGit)($commit))->toBeNull()
         ->and((new ReadGitCommitChangesWithGit)($commit))->toBe([]);
 });
+
+it('ignores changes to whitespace', function () {
+    $repository = $this->makeRepository();
+    file_put_contents("$repository/indent.php", "if (true) {\necho 1;\n}\n");
+    file_put_contents("$repository/other.txt", "one\n");
+    commitAll($repository, 'first files');
+    file_put_contents("$repository/indent.php", "if (true) {\n    echo 1;\n}\n");
+    file_put_contents("$repository/other.txt", "two\n");
+    commitAll($repository, 'indent and change');
+
+    $changes = (new ReadGitCommitChangesWithGit)(new GitCommit($this->headHash($repository), $repository));
+
+    expect(array_map(fn (FileChange $change) => [$change->path, $change->patch], $changes))->toBe([
+        ['other.txt', "@@ -1 +1 @@\n-one\n+two"],
+    ]);
+});

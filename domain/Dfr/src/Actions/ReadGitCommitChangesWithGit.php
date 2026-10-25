@@ -20,7 +20,8 @@ class ReadGitCommitChangesWithGit implements ReadGitCommitChanges
     public function __invoke(GitCommit $commit): array
     {
         // A merge commit shows the changes against its first parent, like a normal commit.
-        $options = ['show', '--format=', '--no-color', '--find-renames', '--diff-merges=first-parent'];
+        // Changes to whitespace are ignored. A file with only such changes is left out of both outputs.
+        $options = ['show', '--format=', '--no-color', '--find-renames', '--diff-merges=first-parent', '--ignore-all-space'];
         $numstat = new Process(['git', ...$options, '--numstat', '-z', '--end-of-options', $commit->hash], $commit->repository);
         $numstat->run();
         $patch = new Process(['git', ...$options, '--patch', '--no-ext-diff', '--no-textconv', '--end-of-options', $commit->hash], $commit->repository);
