@@ -39,6 +39,8 @@ Suggested filenames and content
 
 - `plan.md`: the plan, the approach and the decisions with their reasons.
 - `todo.md`: the steps as a Markdown todo list.
+- `files.md`: the list of files relevant to the thing.
+- `edited-files.md`: the list of files that have been edited.
 - `work-log.md`: what each session did, and the next step.
 - `review-instructions.md`: the instructions for reviewing the work. This is the verbatim text used to spawn a fresh agent for the review.
 - `review.md`: the review result and feedback on the work.
