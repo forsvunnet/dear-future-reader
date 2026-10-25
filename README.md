@@ -88,24 +88,24 @@ dfr $ID fm:add [FILENAME] [YAML]  # Add or replace the given attributes. Keeps t
 A todo list is a title or a text line in a file, followed by one or more Markdown todo items. The title must be unique.
 
 ```shell
-dfr $ID todo [NAME] add [ITEM...]
+dfr $ID todo add [ITEM...] --list [NAME]
 ```
 
-The name of the todo list is optional.
+The `--list` flag is optional. It gives the name of the todo list.
 
-- With a name, the command looks only in that todo list.
-- Without a name, the command looks in all todo lists. Each argument must then match one unique line across all lists.
-- Without a name, `add` and `next` need exactly one todo list in the thing. If there are more, the command fails.
+- With `--list`, the command looks only in that todo list.
+- Without `--list`, the command looks in all todo lists. Each argument must then match one unique line across all lists.
+- Without `--list`, `add` and `next` need exactly one todo list in the thing. If there are more, the command fails.
 
 Examples:
 
 ```shell
-dfr $ID todo "Setup" add "Define dependencies" "Install packages" "Run build command"
-dfr $ID todo "Setup" add:after "install" "Verify installation"
-dfr $ID todo "Setup" add:before "build" "Verify installation"
-dfr $ID todo "Setup" tick "deps" "install" "build"
-dfr $ID todo "Setup" untick "deps" "install" "build"
-dfr $ID todo "Setup" next
+dfr $ID todo add "Define dependencies" "Install packages" "Run build command" --list "Setup"
+dfr $ID todo add:after "install" "Verify installation" --list "Setup"
+dfr $ID todo add:before "build" "Verify installation" --list "Setup"
+dfr $ID todo tick "deps" "install" "build" --list "Setup"
+dfr $ID todo untick "deps" "install" "build" --list "Setup"
+dfr $ID todo next --list "Setup"
 dfr $ID todo tick "install"
 ```
 
