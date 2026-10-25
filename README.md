@@ -51,10 +51,25 @@ echo "Build the login page" | dfr $ID write plan.md
 ### Things
 
 ```shell
-dfr list       # List all things with their IDs. Hides finished things.
-dfr $ID done   # Mark the thing as finished.
-dfr $ID log    # Show which session changed which file, and when.
+dfr init [NAME]                         # Make a new thing and show its ID.
+dfr init [NAME] --parent [PARENT_ID]    # Make a new thing as a child of another thing.
+dfr list                                # List all things with their IDs and status.
+dfr list --status [STATUS]              # List only the things with this exact status.
+dfr list --tree                         # Show the things as a tree, with each child under its parent.
+dfr search [TEXT]                       # Find text in the context files of all things.
+dfr $ID rename [NAME]                   # Change the name of the thing. The ID stays the same.
+dfr $ID status                          # Show the status of the thing.
+dfr $ID status [STATUS]                 # Set the status of the thing. The status is free text.
+dfr $ID log                             # Show which session changed which file, and when.
+dfr $ID parent [PARENT_ID]              # Make the thing a child of another thing.
+dfr $ID parent:remove                   # Remove the parent of the thing.
+dfr $ID git:add [HASH]                  # Connect a git commit to the thing.
+dfr $ID git:remove [HASH]               # Remove the connection to a git commit.
 ```
+
+Add `--json` to `list`, `search`, `read`, `read:all` and `log` to get the output as JSON.
+
+A thing has one parent at most. The parent must not be the thing itself, or a child of the thing at any level. If it is, the command fails and changes nothing.
 
 ### Read
 
