@@ -25,5 +25,6 @@ After the report, update "Current status" below.
 - The README describes all the commands of the CLI.
 - PHASES.md lists the phases.
 - Phase 0 is done. The decisions are in [doc/decisions.md](doc/decisions.md).
-- There is no code yet.
-- Next step: phase 1, project setup.
+- Phase 1 is done. The Laravel app, Pest, Larastan and the `dfr` script are set up.
+- Run the tests with `./vendor/bin/pest`. Run Larastan with `./vendor/bin/phpstan analyse`.
+- Next step: phase 2, core CLI.
