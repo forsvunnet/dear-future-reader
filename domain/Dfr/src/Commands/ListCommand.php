@@ -7,6 +7,7 @@ namespace Domain\Dfr\Commands;
 use Domain\Dfr\Actions\EncodeJson;
 use Domain\Dfr\Actions\ListThings;
 use Domain\Dfr\Actions\SortAsTree;
+use Domain\Dfr\Actions\ThingProjects;
 use Domain\Dfr\Data\Thing;
 use Domain\Dfr\Data\TreeRow;
 use Illuminate\Console\Command;
@@ -24,6 +25,7 @@ class ListCommand extends Command
         private ListThings $listThings,
         private SortAsTree $sortAsTree,
         private EncodeJson $encodeJson,
+        private ThingProjects $thingProjects,
     ) {
         parent::__construct();
     }
@@ -44,6 +46,7 @@ class ListCommand extends Command
                 'id' => $thing->id,
                 'name' => $thing->name,
                 'parent' => $thing->parent,
+                'projects' => ($this->thingProjects)($thing),
             ], $things);
 
             $this->output->writeln(($this->encodeJson)($rows), OutputInterface::OUTPUT_RAW);
@@ -55,7 +58,15 @@ class ListCommand extends Command
 
         foreach ($rows as $row) {
             $indent = str_repeat('  ', $row->depth);
-            $this->output->writeln("$indent{$row->thing->id}\t{$row->thing->name}", OutputInterface::OUTPUT_RAW);
+            $line = "$indent{$row->thing->id}\t{$row->thing->name}";
+            $projects = ($this->thingProjects)($row->thing);
+
+            // ponytail: two repositories with the same folder name look the same here. --json has the full paths.
+            if ($projects !== []) {
+                $line .= "\t".implode(', ', array_map(basename(...), $projects));
+            }
+
+            $this->output->writeln($line, OutputInterface::OUTPUT_RAW);
         }
 
         return 0;

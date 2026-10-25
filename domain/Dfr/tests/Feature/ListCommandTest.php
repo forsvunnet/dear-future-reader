@@ -45,8 +45,8 @@ it('shows the things as JSON', function () {
     $child = trim($this->dfr(['init', 'child', '--parent', $parent])->getOutput());
 
     expect(json_decode($this->dfr(['list', '--json'])->getOutput(), true))->toBe([
-        ['id' => $child, 'name' => 'child', 'parent' => $parent],
-        ['id' => $parent, 'name' => 'parent', 'parent' => null],
+        ['id' => $child, 'name' => 'child', 'parent' => $parent, 'projects' => []],
+        ['id' => $parent, 'name' => 'parent', 'parent' => null, 'projects' => []],
     ]);
 });
 
@@ -56,4 +56,19 @@ it('fails on --tree together with --json', function () {
 
     expect($process->getExitCode())->toBe(1)
         ->and($process->getErrorOutput())->toContain('--tree does not work together');
+});
+
+it('shows the projects of each thing', function () {
+    $first = $this->makeRepository('first');
+    $second = $this->makeRepository('second');
+    $id = trim($this->dfr(['init', 'test'], folder: $first)->getOutput());
+    $this->dfr([$id, 'git:add', 'HEAD'], folder: $second);
+    $this->dfr([$id, 'git:add', 'HEAD'], folder: $first);
+    $other = $this->init('other');
+
+    expect($this->dfr(['list'])->getOutput())->toBe("$other\tother\n$id\ttest\tfirst, second\n")
+        ->and(json_decode($this->dfr(['list', '--json'])->getOutput(), true))->toBe([
+            ['id' => $other, 'name' => 'other', 'parent' => null, 'projects' => []],
+            ['id' => $id, 'name' => 'test', 'parent' => null, 'projects' => [realpath($first), realpath($second)]],
+        ]);
 });

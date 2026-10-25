@@ -11,6 +11,7 @@ use Domain\Dfr\Actions\ReadThing;
 use Domain\Dfr\Actions\RenderBody;
 use Domain\Dfr\Actions\SaveFileIfUnchanged;
 use Domain\Dfr\Actions\SplitFrontmatter;
+use Domain\Dfr\Actions\ThingProjects;
 use Domain\Dfr\Actions\ToggleTodoItem;
 use Domain\Dfr\Data\LogEntry;
 use Domain\Dfr\Data\Thing;
@@ -61,6 +62,8 @@ class ThingPage extends Component
 
     private ToggleTodoItem $toggleTodoItem;
 
+    private ThingProjects $thingProjects;
+
     // Livewire makes the component itself, so the dependencies come in through boot instead of the constructor.
     public function boot(
         ReadThing $readThing,
@@ -71,6 +74,7 @@ class ThingPage extends Component
         ParseTodoLists $parseTodoLists,
         RenderBody $renderBody,
         ToggleTodoItem $toggleTodoItem,
+        ThingProjects $thingProjects,
     ): void {
         $this->readThing = $readThing;
         $this->orderedFiles = $orderedFiles;
@@ -80,6 +84,7 @@ class ThingPage extends Component
         $this->parseTodoLists = $parseTodoLists;
         $this->renderBody = $renderBody;
         $this->toggleTodoItem = $toggleTodoItem;
+        $this->thingProjects = $thingProjects;
     }
 
     public function edit(string $fileName): void
@@ -186,6 +191,7 @@ class ThingPage extends Component
         return view('dfr::thing-page', [
             'thing' => $thing,
             'parent' => $thing->parent === null ? null : ($this->readThing)($thing->parent),
+            'projects' => ($this->thingProjects)($thing),
             'documents' => $documents,
             'bodies' => $bodies,
             'progress' => $progress,

@@ -65,4 +65,24 @@ abstract class DfrTestCase extends TestCase
     {
         return (array) json_decode((string) file_get_contents($this->thingFolder($id).'/.thing.json'), true);
     }
+
+    /**
+     * Makes a git repository with one commit and returns its folder.
+     */
+    public function makeRepository(string $name = 'repository'): string
+    {
+        $folder = "$this->home/$name";
+        mkdir($folder);
+
+        foreach ([['init', '-q'], ['-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-q', '--allow-empty', '-m', 'first']] as $arguments) {
+            (new Process(['git', ...$arguments], $folder, ['HOME' => $this->home]))->mustRun();
+        }
+
+        return $folder;
+    }
+
+    public function headHash(string $folder): string
+    {
+        return trim((new Process(['git', 'rev-parse', 'HEAD'], $folder))->mustRun()->getOutput());
+    }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Domain\Dfr\Actions;
 
 use Domain\Dfr\Contracts\FindGitCommit;
+use Domain\Dfr\Contracts\FindGitRepository;
 use Domain\Dfr\Data\GitCommit;
 use Domain\Dfr\Data\GitCommitResult;
 use Symfony\Component\Process\Process;
@@ -14,12 +15,15 @@ use Symfony\Component\Process\Process;
  */
 class FindGitCommitWithGit implements FindGitCommit
 {
+    public function __construct(
+        private FindGitRepository $findGitRepository,
+    ) {}
+
     public function __invoke(string $folder, string $revision): GitCommitResult
     {
-        $topLevel = new Process(['git', 'rev-parse', '--show-toplevel'], $folder);
-        $topLevel->run();
+        $repository = ($this->findGitRepository)($folder);
 
-        if (! $topLevel->isSuccessful()) {
+        if ($repository === null) {
             return new GitCommitResult(null, "$folder is not in a git repository.");
         }
 
@@ -31,6 +35,6 @@ class FindGitCommitWithGit implements FindGitCommit
             return new GitCommitResult(null, "The git repository has no commit $revision.");
         }
 
-        return new GitCommitResult(new GitCommit(trim($hash->getOutput()), trim($topLevel->getOutput())), null);
+        return new GitCommitResult(new GitCommit(trim($hash->getOutput()), $repository), null);
     }
 }

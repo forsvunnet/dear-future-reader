@@ -31,6 +31,7 @@ class AddToOrder
             folder: $current->folder,
             name: $current->name,
             parent: $current->parent,
+            repository: $current->repository,
             commits: $current->commits,
             files: [...$current->files, $fileName],
         ));

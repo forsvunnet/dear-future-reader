@@ -66,13 +66,17 @@ dfr $ID git:add [HASH]                  # Connect a git commit to the thing.
 dfr $ID git:remove [HASH]               # Remove the connection to a git commit.
 ```
 
-`list` shows one thing on each line: the ID and the name, with a tab between them. `--tree` puts each child under its parent, with two spaces of indent for each level. `--tree` does not work together with `--json`.
+`init` stores the git repository of the current folder, if there is one.
+
+A thing relates to projects. A project is a git repository: the repository where `init` ran, and the repository of each commit from `git:add`.
+
+`list` shows one thing on each line: the ID, the name and the projects, with a tab between them. The projects show as folder names, with ", " between them. A thing with no projects has no projects column. `--tree` puts each child under its parent, with two spaces of indent for each level. `--tree` does not work together with `--json`.
 
 `search` ignores case. It shows one match on each line: the ID, the filename, the line number and the line, with a tab between them. It does not search archived files.
 
 `log` shows one command on each line: the time in UTC, the session, the exit code and the command, with a tab between them. A failed command is in the log too. `init` is not in the log.
 
-Add `--json` to `list`, `search`, `read`, `read:all` and `log` to get the output as JSON. With `--json`, `read` and `read:all` give the frontmatter and the body of each file apart.
+Add `--json` to `list`, `search`, `read`, `read:all` and `log` to get the output as JSON. `list --json` gives the full path of each project. With `--json`, `read` and `read:all` give the frontmatter and the body of each file apart.
 
 A thing has one parent at most. The parent must not be the thing itself, or a child of the thing at any level. If it is, the command fails and changes nothing.
 
@@ -85,6 +89,8 @@ dfr $ID read [FILENAME]   # Show one file.
 dfr $ID read:all          # Show the content of all files, in order.
 dfr $ID read:all --fm     # Show only the frontmatter of each file. Also --frontmatter.
 ```
+
+When the thing has projects, `read:all` starts with a line like `Projects: /path/one, /path/two` and a blank line. `read:all --json` does not show the projects.
 
 ### Write
 
@@ -178,6 +184,8 @@ php artisan serve
 Then open http://localhost:8000. Run `npm run build` first if `public/build/` does not exist.
 
 - The sidebar lists the things as a tree, with the ID, the name and the time of the last command. The most recently active thing is first. A parent moves up when one of its children is active. The sidebar updates every 30 seconds.
+- The sidebar shows the folder names of the projects of each thing.
+- The page of a thing shows the full paths of its projects.
 - The page of a thing shows its context files in order. The body shows as Markdown, and the frontmatter as YAML. Archived files do not show.
 - The header of a file with todo items shows how many are ticked, like `2/3`.
 - A click on the checkbox of a todo item ticks or unticks it. The click fails when the file changed after the page loaded. The page then shows the new content.

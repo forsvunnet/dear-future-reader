@@ -8,6 +8,7 @@ use Domain\Dfr\Actions\LastActive;
 use Domain\Dfr\Actions\ListThings;
 use Domain\Dfr\Actions\SortAsTree;
 use Domain\Dfr\Actions\SortByRecentActivity;
+use Domain\Dfr\Actions\ThingProjects;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -21,18 +22,21 @@ class ThingList extends Component
     #[Locked]
     public ?string $current = null;
 
-    public function render(ListThings $listThings, LastActive $lastActive, SortByRecentActivity $sortByRecentActivity, SortAsTree $sortAsTree): View
+    public function render(ListThings $listThings, LastActive $lastActive, SortByRecentActivity $sortByRecentActivity, SortAsTree $sortAsTree, ThingProjects $thingProjects): View
     {
         $things = $listThings();
         $times = [];
+        $projects = [];
 
         foreach ($things as $thing) {
             $times[$thing->id] = $lastActive($thing);
+            $projects[$thing->id] = array_map(basename(...), $thingProjects($thing));
         }
 
         return view('dfr::thing-list', [
             'rows' => $sortAsTree($sortByRecentActivity($things, $times)),
             'times' => $times,
+            'projects' => $projects,
         ]);
     }
 }

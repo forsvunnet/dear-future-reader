@@ -18,8 +18,9 @@ class CreateThing
 
     /**
      * @param  ?string  $parent  The ID of an existing thing. A new thing has no children, so it cannot make a circle.
+     * @param  ?string  $repository  The path of the git repository of the folder where the thing was made.
      */
-    public function __invoke(string $name, ?string $parent = null): Thing
+    public function __invoke(string $name, ?string $parent = null, ?string $repository = null): Thing
     {
         if (! is_dir($this->root->path) && ! @mkdir($this->root->path, 0777, true) && ! is_dir($this->root->path)) {
             throw new RuntimeException("Could not make the folder {$this->root->path}.");
@@ -39,7 +40,7 @@ class CreateThing
             }
         }
 
-        $thing = new Thing(id: $id, folder: $folder, name: $name, parent: $parent, commits: [], files: []);
+        $thing = new Thing(id: $id, folder: $folder, name: $name, parent: $parent, repository: $repository, commits: [], files: []);
         ($this->saveThing)($thing);
 
         return $thing;

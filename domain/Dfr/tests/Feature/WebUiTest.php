@@ -228,3 +228,13 @@ it('shows the things in the sidebar, the most recently active first', function (
         ->assertSeeInOrder(['Old parent', '3 days ago', 'Active child', '2 minutes ago', 'Middle thing', '2 days ago'])
         ->assertSee('aria-current="page"', false);
 });
+
+it('shows the projects of a thing', function () {
+    $repository = $this->makeRepository('shop');
+    $id = trim($this->dfr(['init', 'test'], folder: $repository)->getOutput());
+
+    $this->get("/things/$id")
+        ->assertOk()
+        ->assertSeeInOrder(['Projects', realpath($repository)])
+        ->assertSeeInOrder(["/things/$id", 'shop'], false);
+});

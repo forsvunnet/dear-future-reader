@@ -14,6 +14,14 @@
                 @endif
             </dd>
         @endif
+        @if ($projects !== [])
+            <dt class="dfr-label">Projects</dt>
+            <dd>
+                @foreach ($projects as $project)
+                    <span class="block">{{ $project }}</span>
+                @endforeach
+            </dd>
+        @endif
     </dl>
 
     @if ($tickError !== null)

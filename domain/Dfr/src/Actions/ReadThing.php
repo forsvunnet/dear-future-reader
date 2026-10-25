@@ -40,6 +40,7 @@ class ReadThing
 
         // The other fields came after the first version, so they can be missing.
         $parent = $data['parent'] ?? null;
+        $repository = $data['repository'] ?? null;
         $commits = [];
 
         foreach ((array) ($data['commits'] ?? []) as $commit) {
@@ -53,6 +54,7 @@ class ReadThing
             folder: $folder,
             name: $data['name'],
             parent: is_string($parent) ? $parent : null,
+            repository: is_string($repository) ? $repository : null,
             commits: $commits,
             files: array_values(array_filter($data['files'], is_string(...))),
         );

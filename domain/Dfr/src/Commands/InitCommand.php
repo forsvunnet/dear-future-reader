@@ -6,6 +6,7 @@ namespace Domain\Dfr\Commands;
 
 use Domain\Dfr\Actions\CreateThing;
 use Domain\Dfr\Actions\ReadThing;
+use Domain\Dfr\Contracts\FindGitRepository;
 use Illuminate\Console\Command;
 
 class InitCommand extends Command
@@ -17,6 +18,7 @@ class InitCommand extends Command
     public function __construct(
         private CreateThing $createThing,
         private ReadThing $readThing,
+        private FindGitRepository $findGitRepository,
     ) {
         parent::__construct();
     }
@@ -38,7 +40,7 @@ class InitCommand extends Command
             return 1;
         }
 
-        $this->line(($this->createThing)($name, $parent)->id);
+        $this->line(($this->createThing)($name, $parent, ($this->findGitRepository)((string) getcwd()))->id);
 
         return 0;
     }

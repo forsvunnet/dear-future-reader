@@ -19,11 +19,15 @@ dfr $ID read:all
 
 Read all of the output before you do other work. Then continue from the next step in the files.
 
+The first line of the output can name the projects of the thing. A project is the folder of a git repository. Work in those folders.
+
 When the user gives no ID, make a new thing:
 
 ```shell
 dfr init "short name of the task"
 ```
+
+Run `init` in the folder of the project. The thing stores the git repository of that folder.
 
 The command shows the ID. Tell the user the ID, so that a new session can continue the work.
 

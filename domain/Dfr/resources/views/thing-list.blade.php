@@ -18,6 +18,9 @@
                         <span class="dfr-muted block">
                             {{ $row->thing->id }} · <time datetime="{{ $time->toIso8601String() }}" title="{{ $time->toIso8601String() }}">{{ $time->diffForHumans() }}</time>
                         </span>
+                        @if ($projects[$row->thing->id] !== [])
+                            <span class="dfr-muted block">{{ implode(', ', $projects[$row->thing->id]) }}</span>
+                        @endif
                     </a>
                 </li>
             @endforeach

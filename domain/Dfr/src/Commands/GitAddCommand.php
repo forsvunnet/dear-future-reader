@@ -47,6 +47,7 @@ class GitAddCommand extends Command
                     folder: $current->folder,
                     name: $current->name,
                     parent: $current->parent,
+                    repository: $current->repository,
                     commits: [...$current->commits, $commit],
                     files: $current->files,
                 );

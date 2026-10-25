@@ -9,7 +9,15 @@ it('makes a thing and shows only its ID', function () {
     expect($process->getExitCode())->toBe(0)
         ->and($id)->toMatch('/^[2-9a-hjkmnp-z]{3}$/')
         ->and(json_decode((string) file_get_contents($this->thingFolder($id).'/.thing.json'), true))
-        ->toBe(['name' => 'login page', 'parent' => null, 'commits' => [], 'files' => []]);
+        ->toBe(['name' => 'login page', 'parent' => null, 'repository' => null, 'commits' => [], 'files' => []]);
+});
+
+it('stores the git repository of the current folder', function () {
+    $repository = $this->makeRepository();
+    mkdir("$repository/src");
+    $id = trim($this->dfr(['init', 'test'], folder: "$repository/src")->getOutput());
+
+    expect($this->thingData($id)['repository'])->toBe(realpath($repository));
 });
 
 it('fails on an empty name', function () {

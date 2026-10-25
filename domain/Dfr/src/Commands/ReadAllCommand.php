@@ -8,6 +8,7 @@ use Domain\Dfr\Actions\EncodeJson;
 use Domain\Dfr\Actions\OrderedFiles;
 use Domain\Dfr\Actions\RunOnThing;
 use Domain\Dfr\Actions\SplitFrontmatter;
+use Domain\Dfr\Actions\ThingProjects;
 use Domain\Dfr\Data\Thing;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,6 +27,7 @@ class ReadAllCommand extends Command
         private OrderedFiles $orderedFiles,
         private SplitFrontmatter $splitFrontmatter,
         private EncodeJson $encodeJson,
+        private ThingProjects $thingProjects,
     ) {
         parent::__construct();
     }
@@ -57,6 +59,12 @@ class ReadAllCommand extends Command
                 $this->output->writeln(($this->encodeJson)($files), OutputInterface::OUTPUT_RAW);
 
                 return 0;
+            }
+
+            $projects = ($this->thingProjects)($thing);
+
+            if ($projects !== []) {
+                $this->output->write('Projects: '.implode(', ', $projects)."\n\n", false, OutputInterface::OUTPUT_RAW);
             }
 
             $this->output->write(implode("\n", $sections), false, OutputInterface::OUTPUT_RAW);

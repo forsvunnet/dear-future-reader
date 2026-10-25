@@ -48,3 +48,12 @@ it('shows only the frontmatter as JSON with --fm', function () {
     expect(json_decode($this->dfr([$id, 'read:all', '--fm', '--json'])->getOutput(), true))
         ->toBe([['file' => 'plan.md', 'frontmatter' => 'status: draft']]);
 });
+
+it('shows the projects before the files', function () {
+    $repository = $this->makeRepository();
+    $id = trim($this->dfr(['init', 'test'], folder: $repository)->getOutput());
+    $this->dfr([$id, 'write', 'plan.md', 'the plan']);
+
+    expect($this->dfr([$id, 'read:all'])->getOutput())
+        ->toBe('Projects: '.realpath($repository)."\n\n==> plan.md <==\nthe plan\n");
+});

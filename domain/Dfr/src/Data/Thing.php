@@ -8,6 +8,7 @@ readonly class Thing
 {
     /**
      * @param  ?string  $parent  The ID of the parent thing.
+     * @param  ?string  $repository  The path of the git repository of the folder where the thing was made.
      * @param  list<GitCommit>  $commits
      * @param  list<string>  $files  The filenames in their order.
      */
@@ -16,6 +17,7 @@ readonly class Thing
         public string $folder,
         public string $name,
         public ?string $parent,
+        public ?string $repository,
         public array $commits,
         public array $files,
     ) {}

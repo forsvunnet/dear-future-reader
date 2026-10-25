@@ -21,6 +21,7 @@ class SaveThing
         $json = ($this->encodeJson)([
             'name' => $thing->name,
             'parent' => $thing->parent,
+            'repository' => $thing->repository,
             'commits' => $thing->commits,
             'files' => $thing->files,
         ]);
