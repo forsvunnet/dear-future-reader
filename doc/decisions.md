@@ -24,7 +24,7 @@ An ID has 3 random characters. When all 3-character IDs are used, new IDs get 4 
 
 The data of a thing is in files in its folder:
 
-- `.thing.json` holds the name, the status, the parent, the git commits and the order of the files.
+- `.thing.json` holds the name, the parent, the git commits and the order of the files.
 - `.log.jsonl` gets one line for each command on the thing.
 
 A file or folder whose name starts with `.` is never a context file.

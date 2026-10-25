@@ -29,7 +29,6 @@ class ParentRemoveCommand extends Command
                 id: $current->id,
                 folder: $current->folder,
                 name: $current->name,
-                status: $current->status,
                 parent: null,
                 commits: $current->commits,
                 files: $current->files,

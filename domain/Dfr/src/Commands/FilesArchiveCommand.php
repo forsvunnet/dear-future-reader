@@ -47,7 +47,6 @@ class FilesArchiveCommand extends Command
                     id: $current->id,
                     folder: $current->folder,
                     name: $current->name,
-                    status: $current->status,
                     parent: $current->parent,
                     commits: $current->commits,
                     files: array_values(array_diff($current->files, $given)),

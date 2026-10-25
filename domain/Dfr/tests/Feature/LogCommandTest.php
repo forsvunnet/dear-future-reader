@@ -19,9 +19,9 @@ it('shows the session, the exit code and the command of each command on the thin
 
 it('uses the session unknown when the variable is not set', function () {
     $id = $this->init();
-    $this->dfr([$id, 'status', 'done']);
+    $this->dfr([$id, 'rename', 'renamed']);
 
-    expect($this->dfr([$id, 'log'])->getOutput())->toContain("\tunknown\t0\tstatus done");
+    expect($this->dfr([$id, 'log'])->getOutput())->toContain("\tunknown\t0\trename renamed");
 });
 
 it('keeps each value of a list argument and each flag', function () {

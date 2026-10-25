@@ -9,7 +9,7 @@ it('makes a thing and shows only its ID', function () {
     expect($process->getExitCode())->toBe(0)
         ->and($id)->toMatch('/^[2-9a-hjkmnp-z]{3}$/')
         ->and(json_decode((string) file_get_contents($this->thingFolder($id).'/.thing.json'), true))
-        ->toBe(['name' => 'login page', 'status' => null, 'parent' => null, 'commits' => [], 'files' => []]);
+        ->toBe(['name' => 'login page', 'parent' => null, 'commits' => [], 'files' => []]);
 });
 
 it('fails on an empty name', function () {

@@ -20,7 +20,6 @@ class SaveThing
     {
         $json = ($this->encodeJson)([
             'name' => $thing->name,
-            'status' => $thing->status,
             'parent' => $thing->parent,
             'commits' => $thing->commits,
             'files' => $thing->files,

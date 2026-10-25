@@ -15,7 +15,6 @@ When the user gives an ID, continue that thing:
 
 ```shell
 dfr $ID read:all
-dfr $ID status
 ```
 
 Read all of the output before you do other work. Then continue from the next step in the files.
@@ -59,11 +58,8 @@ A session can stop at any time. Write to the files as you go. Do not wait for th
 - Add a step when you find one: `dfr $ID todo add "item"`.
 - Write each decision in `plan.md` when you make it.
 - Connect each commit you make: `dfr $ID git:add HEAD`.
-- Set a short status: `dfr $ID status "in progress"`.
 
 Before you stop, append to `progress.md`: what you did, what is not solved, and the next step.
-
-When the work is done, set the status to `done`.
 
 ## More commands
 

@@ -1,0 +1,201 @@
+/*
+  The design language of the Dfr Web UI: simple, clean and technical.
+
+  - One font, one size, one weight. The rule on every element below makes
+    sure no utility class and no browser default can change them.
+  - Case, colour, space and lines show the hierarchy. Titles and labels are
+    uppercase. Secondary text is muted. Lines divide the parts of a page.
+  - IDs and file names keep their case, because they are names in the code.
+  - Corners are square.
+
+  The colours are --dfr-* tokens. The .dfr-* classes read only the tokens.
+  The classes sit outside every Tailwind layer, so they win over a utility.
+*/
+
+:root {
+    --dfr-bg: oklch(98.5% 0 0);
+    --dfr-text: oklch(25% 0 0);
+    --dfr-muted: oklch(50% 0 0);
+    --dfr-line: oklch(87% 0 0);
+    --dfr-focus: oklch(55% 0.17 250);
+    --dfr-danger: oklch(50.5% 0.213 27.518);
+    /* The lime fill of a primary button. It is light, so the text on it is dark. */
+    --dfr-fill: #C6F26B;
+    --dfr-fill-hover: #D4F68A;
+    --dfr-fill-text: #121212;
+    --dfr-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --dfr-font-size: 0.875rem;
+    --dfr-leading: 1.5;
+}
+
+/* The dark values come from the Playground palette. */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dfr-bg: #121212;
+        --dfr-text: #E9E9E9;
+        --dfr-muted: #9F9F9F;
+        --dfr-line: #333333;
+        --dfr-focus: #4EA8F0;
+        --dfr-danger: oklch(70.4% 0.191 22.216);
+    }
+}
+
+.dfr-body {
+    background-color: var(--dfr-bg);
+    color: var(--dfr-text);
+    font-family: var(--dfr-font);
+    font-size: var(--dfr-font-size);
+    line-height: var(--dfr-leading);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dfr-body * {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+}
+
+.dfr-body :focus-visible {
+    outline: 1px solid var(--dfr-focus);
+    outline-offset: 2px;
+}
+
+.dfr-body a {
+    text-decoration: underline;
+    text-decoration-color: var(--dfr-muted);
+    text-underline-offset: 3px;
+}
+
+.dfr-body a:hover {
+    text-decoration-color: currentColor;
+}
+
+/* A title that is a link, like the name of the app in the top bar. */
+.dfr-body a.dfr-title {
+    text-decoration: none;
+}
+
+/* A heading: the title of a page or a part of a page. */
+.dfr-title {
+    text-transform: uppercase;
+}
+
+/* A short name next to a value, or the head of a table column. */
+.dfr-label {
+    color: var(--dfr-muted);
+    text-transform: uppercase;
+}
+
+.dfr-muted {
+    color: var(--dfr-muted);
+}
+
+.dfr-danger {
+    color: var(--dfr-danger);
+}
+
+/* The colour of a border. The element sets which sides. */
+.dfr-line {
+    border-color: var(--dfr-line);
+}
+
+.dfr-button {
+    border: 1px solid var(--dfr-line);
+    padding: 0 1ch;
+    text-transform: uppercase;
+}
+
+.dfr-button:hover {
+    border-color: var(--dfr-text);
+}
+
+.dfr-button-primary {
+    border-color: var(--dfr-fill);
+    background-color: var(--dfr-fill);
+    color: var(--dfr-fill-text);
+}
+
+.dfr-button-primary:hover {
+    border-color: var(--dfr-fill-hover);
+    background-color: var(--dfr-fill-hover);
+}
+
+.dfr-input {
+    border: 1px solid var(--dfr-line);
+    background-color: transparent;
+    padding: 0.5em 1ch;
+}
+
+/*
+  A context file rendered from Markdown. All headings have the one size, so
+  a muted mark before each heading shows its level.
+*/
+.dfr-markdown > * + * {
+    margin-top: calc(var(--dfr-leading) * 1em);
+}
+
+.dfr-markdown :is(h1, h2, h3, h4, h5, h6) {
+    text-transform: uppercase;
+}
+
+.dfr-markdown :is(h1, h2, h3, h4, h5, h6)::before {
+    color: var(--dfr-muted);
+}
+
+.dfr-markdown h1::before { content: "# "; }
+.dfr-markdown h2::before { content: "## "; }
+.dfr-markdown h3::before { content: "### "; }
+.dfr-markdown h4::before { content: "#### "; }
+.dfr-markdown h5::before { content: "##### "; }
+.dfr-markdown h6::before { content: "###### "; }
+
+.dfr-markdown :is(ul, ol) {
+    padding-left: 2ch;
+}
+
+.dfr-markdown ul {
+    list-style: square;
+}
+
+.dfr-markdown ol {
+    list-style: decimal;
+}
+
+.dfr-markdown :is(ul, ol) ::marker {
+    color: var(--dfr-muted);
+}
+
+.dfr-markdown :is(blockquote, pre) {
+    border-left: 1px solid var(--dfr-line);
+    padding-left: 2ch;
+}
+
+.dfr-markdown blockquote {
+    color: var(--dfr-muted);
+}
+
+.dfr-markdown pre {
+    overflow-x: auto;
+}
+
+.dfr-markdown hr {
+    border-color: var(--dfr-line);
+}
+
+.dfr-markdown table {
+    border-collapse: collapse;
+}
+
+.dfr-markdown :is(th, td) {
+    border: 1px solid var(--dfr-line);
+    padding: 0 1ch;
+    text-align: left;
+}
+
+.dfr-markdown th {
+    color: var(--dfr-muted);
+    text-transform: uppercase;
+}

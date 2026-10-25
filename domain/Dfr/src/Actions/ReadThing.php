@@ -39,7 +39,6 @@ class ReadThing
         }
 
         // The other fields came after the first version, so they can be missing.
-        $status = $data['status'] ?? null;
         $parent = $data['parent'] ?? null;
         $commits = [];
 
@@ -53,7 +52,6 @@ class ReadThing
             id: $id,
             folder: $folder,
             name: $data['name'],
-            status: is_string($status) ? $status : null,
             parent: is_string($parent) ? $parent : null,
             commits: $commits,
             files: array_values(array_filter($data['files'], is_string(...))),

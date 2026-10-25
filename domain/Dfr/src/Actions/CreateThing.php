@@ -39,7 +39,7 @@ class CreateThing
             }
         }
 
-        $thing = new Thing(id: $id, folder: $folder, name: $name, status: null, parent: $parent, commits: [], files: []);
+        $thing = new Thing(id: $id, folder: $folder, name: $name, parent: $parent, commits: [], files: []);
         ($this->saveThing)($thing);
 
         return $thing;

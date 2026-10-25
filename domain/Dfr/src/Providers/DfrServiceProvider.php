@@ -22,7 +22,6 @@ use Domain\Dfr\Commands\ReadAllCommand;
 use Domain\Dfr\Commands\ReadCommand;
 use Domain\Dfr\Commands\RenameCommand;
 use Domain\Dfr\Commands\SearchCommand;
-use Domain\Dfr\Commands\StatusCommand;
 use Domain\Dfr\Commands\TodoAddAfterCommand;
 use Domain\Dfr\Commands\TodoAddBeforeCommand;
 use Domain\Dfr\Commands\TodoAddCommand;
@@ -66,7 +65,6 @@ class DfrServiceProvider extends ServiceProvider
             TodoTickCommand::class,
             TodoUntickCommand::class,
             TodoNextCommand::class,
-            StatusCommand::class,
             ParentCommand::class,
             ParentRemoveCommand::class,
             RenameCommand::class,

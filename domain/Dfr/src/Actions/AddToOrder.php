@@ -30,7 +30,6 @@ class AddToOrder
             id: $current->id,
             folder: $current->folder,
             name: $current->name,
-            status: $current->status,
             parent: $current->parent,
             commits: $current->commits,
             files: [...$current->files, $fileName],

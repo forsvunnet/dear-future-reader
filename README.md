@@ -55,13 +55,10 @@ echo "Build the login page" | dfr $ID write plan.md
 ```shell
 dfr init [NAME]                         # Make a new thing and show its ID.
 dfr init [NAME] --parent [PARENT_ID]    # Make a new thing as a child of another thing.
-dfr list                                # List all things with their IDs and status.
-dfr list --status [STATUS]              # List only the things with this exact status.
+dfr list                                # List all things with their IDs.
 dfr list --tree                         # Show the things as a tree, with each child under its parent.
 dfr search [TEXT]                       # Find text in the context files of all things.
 dfr $ID rename [NAME]                   # Change the name of the thing. The ID stays the same.
-dfr $ID status                          # Show the status of the thing.
-dfr $ID status [STATUS]                 # Set the status of the thing. The status is free text.
 dfr $ID log                             # Show which session ran which command on the thing, and when.
 dfr $ID parent [PARENT_ID]              # Make the thing a child of another thing.
 dfr $ID parent:remove                   # Remove the parent of the thing.
@@ -69,9 +66,7 @@ dfr $ID git:add [HASH]                  # Connect a git commit to the thing.
 dfr $ID git:remove [HASH]               # Remove the connection to a git commit.
 ```
 
-`list` shows one thing on each line: the ID, the name and the status, with a tab between them. `--tree` puts each child under its parent, with two spaces of indent for each level. `--tree` does not work together with `--status` or `--json`.
-
-`status ""` removes the status.
+`list` shows one thing on each line: the ID and the name, with a tab between them. `--tree` puts each child under its parent, with two spaces of indent for each level. `--tree` does not work together with `--json`.
 
 `search` ignores case. It shows one match on each line: the ID, the filename, the line number and the line, with a tab between them. It does not search archived files.
 
@@ -182,7 +177,7 @@ php artisan serve
 
 Then open http://localhost:8000. Run `npm run build` first if `public/build/` does not exist.
 
-- The start page lists the things as a tree, with the ID, the name and the status.
+- The start page lists the things as a tree, with the ID and the name.
 - The page of a thing shows its context files in order. The body shows as Markdown, and the frontmatter as YAML. Archived files do not show.
 - **Edit** opens the full content of a file, with its frontmatter. **Save** writes the file.
 

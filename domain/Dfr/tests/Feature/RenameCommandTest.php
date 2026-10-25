@@ -7,7 +7,7 @@ it('changes the name and keeps the ID', function () {
     $process = $this->dfr([$id, 'rename', 'new name']);
 
     expect($process->getExitCode())->toBe(0)
-        ->and($this->dfr(['list'])->getOutput())->toBe("$id\tnew name\t\n");
+        ->and($this->dfr(['list'])->getOutput())->toBe("$id\tnew name\n");
 });
 
 it('fails on an empty name', function () {

@@ -52,7 +52,6 @@ class ParentCommand extends Command
                     id: $current->id,
                     folder: $current->folder,
                     name: $current->name,
-                    status: $current->status,
                     parent: $parentId,
                     commits: $current->commits,
                     files: $current->files,

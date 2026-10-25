@@ -16,16 +16,15 @@ it('lets php artisan serve pass the home folder to the Web UI', function () {
     expect(ServeCommand::$passthroughVariables)->toContain('HOME');
 });
 
-it('lists the things with their status, with each child under its parent', function () {
+it('lists the things with each child under its parent', function () {
     $parent = $this->init('Parent thing');
     $child = $this->init('Child thing');
     $this->dfr([$child, 'parent', $parent]);
-    $this->dfr([$child, 'status', 'in progress']);
 
     $this->get('/')
         ->assertOk()
-        ->assertSeeInOrder(['Parent thing', 'Child thing', 'in progress'])
-        ->assertSee('padding-left: 1.5rem', false)
+        ->assertSeeInOrder(['Parent thing', 'Child thing'])
+        ->assertSee('padding-left: 2ch', false)
         ->assertSee("/things/$child", false);
 });
 
