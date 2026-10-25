@@ -6,6 +6,7 @@ use Domain\Dfr\Livewire\ThingPage;
 use Domain\Dfr\ValueObjects\ThingsRoot;
 use Illuminate\Foundation\Console\ServeCommand;
 use Livewire\Livewire;
+use Symfony\Component\Process\Process;
 
 beforeEach(function () {
     // The dfr script reads the things from the temporary home folder. The Web UI must read the same folder.
@@ -237,4 +238,62 @@ it('shows the projects of a thing', function () {
         ->assertOk()
         ->assertSeeInOrder(['Projects', realpath($repository)])
         ->assertSeeInOrder(["/things/$id", 'shop'], false);
+});
+
+it('marks a code block with a language for Shiki and escapes the code', function () {
+    $id = $this->init();
+    $this->dfr([$id, 'write', 'plan.md'], "```php\necho '<b>';\n```\n\n```\nplain\n```\n");
+
+    $this->get("/things/$id")
+        ->assertOk()
+        ->assertSee('x-highlight="" data-lang="php" wire:ignore=""', false)
+        ->assertSee("echo '&lt;b&gt;';", false)
+        ->assertSee("<pre><code>plain\n</code></pre>", false);
+});
+
+it('lists the commits of a thing and opens one in the panel', function () {
+    $repository = $this->makeRepository('shop');
+    file_put_contents("$repository/cart.php", "<?php\necho 1;\n");
+    (new Process(['git', 'add', '-A'], $repository))->mustRun();
+    (new Process(['git', '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-q', '-m', "Add the cart\n\nThe cart holds items."], $repository))->mustRun();
+    $id = $this->init();
+    $this->dfr([$id, 'git:add', 'HEAD~1'], folder: $repository);
+    $this->dfr([$id, 'git:add', 'HEAD'], folder: $repository);
+    $hash = $this->headHash($repository);
+
+    // The commit that was connected last is first.
+    Livewire::test(ThingPage::class, ['id' => $id])
+        ->assertSeeInOrder(['Commits', 'Add the cart', substr($hash, 0, 7).' · shop', 'first'])
+        ->assertDontSee('The cart holds items.')
+        ->call('showCommit', $hash)
+        ->assertSet('openCommit', $hash)
+        ->assertSeeHtmlInOrder(['role="dialog"', 'Add the cart', $hash, 'The cart holds items.', 'cart.php', '+2 −0', 'data-file="cart.php"', '+echo 1;'])
+        ->call('closeCommit')
+        ->assertDontSeeHtml('role="dialog"');
+});
+
+it('opens only a commit of the thing', function () {
+    $id = $this->init();
+
+    Livewire::test(ThingPage::class, ['id' => $id])
+        ->call('showCommit', str_repeat('a', 40))
+        ->assertSet('openCommit', null);
+});
+
+it('closes a file with more than 400 changed lines', function () {
+    $repository = $this->makeRepository('shop');
+    file_put_contents("$repository/small.txt", "one\n");
+    file_put_contents("$repository/large.txt", str_repeat("line\n", 401));
+    (new Process(['git', 'add', '-A'], $repository))->mustRun();
+    (new Process(['git', '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-q', '-m', 'Add files'], $repository))->mustRun();
+    $id = $this->init();
+    $this->dfr([$id, 'git:add', 'HEAD'], folder: $repository);
+
+    $html = Livewire::test(ThingPage::class, ['id' => $id])->call('showCommit', $this->headHash($repository))->html();
+
+    // The attributes of each <details>, by the path in its summary.
+    preg_match_all('/<details([^>]*)>\s*<summary[^>]*>(?:\s|<!--.*?-->)*(\S+)/s', $html, $matches);
+    $open = array_combine($matches[2], array_map(fn ($attributes) => str_contains($attributes, ' open '), $matches[1]));
+
+    expect($open)->toBe(['large.txt' => false, 'small.txt' => true]);
 });

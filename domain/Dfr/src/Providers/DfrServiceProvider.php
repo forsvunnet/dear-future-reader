@@ -7,6 +7,8 @@ namespace Domain\Dfr\Providers;
 use Domain\Dfr\Actions\FindGitCommitWithGit;
 use Domain\Dfr\Actions\FindGitRepositoryWithGit;
 use Domain\Dfr\Actions\LoadThingsRoot;
+use Domain\Dfr\Actions\ReadGitCommitChangesWithGit;
+use Domain\Dfr\Actions\ReadGitCommitHeaderWithGit;
 use Domain\Dfr\Commands\FilesArchiveCommand;
 use Domain\Dfr\Commands\FilesCommand;
 use Domain\Dfr\Commands\FilesReorderCommand;
@@ -34,6 +36,8 @@ use Domain\Dfr\Commands\WriteCommand;
 use Domain\Dfr\Commands\WritePrependCommand;
 use Domain\Dfr\Contracts\FindGitCommit;
 use Domain\Dfr\Contracts\FindGitRepository;
+use Domain\Dfr\Contracts\ReadGitCommitChanges;
+use Domain\Dfr\Contracts\ReadGitCommitHeader;
 use Domain\Dfr\ValueObjects\ThingsRoot;
 use Illuminate\Foundation\Console\ServeCommand;
 use Illuminate\Support\ServiceProvider;
@@ -45,6 +49,8 @@ class DfrServiceProvider extends ServiceProvider
         $this->app->singleton(ThingsRoot::class, fn () => (new LoadThingsRoot)((string) getenv('HOME')));
         $this->app->bind(FindGitCommit::class, FindGitCommitWithGit::class);
         $this->app->bind(FindGitRepository::class, FindGitRepositoryWithGit::class);
+        $this->app->bind(ReadGitCommitHeader::class, ReadGitCommitHeaderWithGit::class);
+        $this->app->bind(ReadGitCommitChanges::class, ReadGitCommitChangesWithGit::class);
 
         // `php artisan serve` passes only a few env vars to the PHP server. The Web UI needs HOME to find the things.
         ServeCommand::$passthroughVariables[] = 'HOME';

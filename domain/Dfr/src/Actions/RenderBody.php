@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Domain\Dfr\Actions;
 
 use Domain\Dfr\Data\TodoItem;
+use Domain\Dfr\Markdown\HighlightedCodeRenderer;
 use Domain\Dfr\Markdown\TickableCheckboxRenderer;
 use Domain\Dfr\Markdown\TodoItemLabelRenderer;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
+use League\CommonMark\Extension\CommonMark\Renderer\Block\FencedCodeRenderer;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\TaskList\TaskListItemMarker;
 use League\CommonMark\MarkdownConverter;
@@ -42,6 +45,7 @@ class RenderBody
             firstLine: ($this->bodyFirstLine)($content),
         ), 10);
         $environment->addRenderer(Paragraph::class, new TodoItemLabelRenderer(new ParagraphRenderer), 10);
+        $environment->addRenderer(FencedCode::class, new HighlightedCodeRenderer(new FencedCodeRenderer), 10);
 
         return (string) (new MarkdownConverter($environment))->convert(($this->splitFrontmatter)($content)->body);
     }

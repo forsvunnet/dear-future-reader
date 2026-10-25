@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ $title ?? 'Things' }} · Dear Future Reader</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js', 'domain/Dfr/resources/css/dfr.css'])
+        @vite(['resources/css/app.css', 'resources/js/app.js', 'domain/Dfr/resources/css/dfr.css', 'domain/Dfr/resources/js/highlight.js'])
     </head>
     <body class="dfr-body md:flex">
         {{-- On a narrow screen the sidebar is above the page. --}}
@@ -14,10 +14,9 @@
             </header>
             @livewire(\Domain\Dfr\Livewire\ThingList::class, ['current' => request()->route('id')])
         </aside>
-        <main class="min-w-0 flex-1 px-4 py-6">
-            <div class="mx-auto max-w-4xl">
-                {{ $slot }}
-            </div>
+        {{-- A page sets its own padding, so the thing page can add a sidebar on the right. --}}
+        <main class="min-w-0 flex-1">
+            {{ $slot }}
         </main>
     </body>
 </html>

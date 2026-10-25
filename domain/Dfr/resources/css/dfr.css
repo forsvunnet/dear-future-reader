@@ -24,8 +24,11 @@
     --dfr-fill-hover: #D4F68A;
     --dfr-fill-text: #121212;
     --dfr-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --dfr-font-size: 0.875rem;
+    --dfr-font-size: 12px;
     --dfr-leading: 1.5;
+    /* The backgrounds of an added line and a removed line in a diff. */
+    --dfr-add: oklch(95% 0.05 145);
+    --dfr-del: oklch(95% 0.04 25);
 }
 
 /* The dark values come from the Playground palette. */
@@ -37,6 +40,8 @@
         --dfr-line: #333333;
         --dfr-focus: #4EA8F0;
         --dfr-danger: oklch(70.4% 0.191 22.216);
+        --dfr-add: oklch(30% 0.06 145);
+        --dfr-del: oklch(30% 0.06 25);
     }
 }
 
@@ -78,18 +83,90 @@
     text-decoration: none;
 }
 
-/* A thing in the sidebar. The thing that the page shows has a line on the left. */
-.dfr-body a.dfr-sidebar-link {
+/* A thing or a commit in a sidebar. The thing that the page shows, or the open commit, has a line on the left. */
+.dfr-body .dfr-sidebar-link {
     text-decoration: none;
     border-left: 2px solid transparent;
 }
 
-.dfr-body a.dfr-sidebar-link:hover {
+.dfr-body .dfr-sidebar-link:hover {
     border-left-color: var(--dfr-line);
 }
 
-.dfr-body a.dfr-sidebar-link[aria-current="page"] {
+.dfr-body .dfr-sidebar-link:is([aria-current="page"], [aria-current="true"]) {
     border-left-color: var(--dfr-fill);
+}
+
+/* The panel of a commit. It slides in from the right over the page. */
+.dfr-panel {
+    background-color: var(--dfr-bg);
+}
+
+section.dfr-panel {
+    animation: dfr-slide-in 150ms ease-out;
+}
+
+@keyframes dfr-slide-in {
+    from { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    section.dfr-panel {
+        animation: none;
+    }
+}
+
+/*
+  Code that Shiki colored. Each token has the colour of the light and the dark
+  theme in --shiki-light and --shiki-dark. The background stays the page background.
+*/
+.shiki span {
+    color: var(--shiki-light);
+}
+
+@media (prefers-color-scheme: dark) {
+    .shiki span {
+        color: var(--shiki-dark);
+    }
+}
+
+/* A diff. Each line shows its kind with a background and a mark on the left. */
+.dfr-diff pre {
+    padding: 0.5em 0;
+}
+
+.dfr-diff .line {
+    display: inline-block;
+    min-width: 100%;
+    padding-right: 1ch;
+}
+
+.dfr-diff .line::before {
+    display: inline-block;
+    width: 3ch;
+    text-align: center;
+    color: var(--dfr-muted);
+    content: " ";
+}
+
+.dfr-diff .dfr-diff-add {
+    background-color: var(--dfr-add);
+}
+
+.dfr-diff .dfr-diff-add::before {
+    content: "+";
+}
+
+.dfr-diff .dfr-diff-del {
+    background-color: var(--dfr-del);
+}
+
+.dfr-diff .dfr-diff-del::before {
+    content: "-";
+}
+
+.dfr-diff .dfr-diff-meta {
+    color: var(--dfr-muted);
 }
 
 /* A heading: the title of a page or a part of a page. */

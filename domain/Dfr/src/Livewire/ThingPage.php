@@ -13,6 +13,9 @@ use Domain\Dfr\Actions\SaveFileIfUnchanged;
 use Domain\Dfr\Actions\SplitFrontmatter;
 use Domain\Dfr\Actions\ThingProjects;
 use Domain\Dfr\Actions\ToggleTodoItem;
+use Domain\Dfr\Contracts\ReadGitCommitChanges;
+use Domain\Dfr\Contracts\ReadGitCommitHeader;
+use Domain\Dfr\Data\GitCommit;
 use Domain\Dfr\Data\LogEntry;
 use Domain\Dfr\Data\Thing;
 use Domain\Dfr\Data\TodoList;
@@ -40,6 +43,10 @@ class ThingPage extends Component
 
     public string $content = '';
 
+    /** The hash of the commit that is open in the panel, or null when the panel is closed. */
+    #[Locked]
+    public ?string $openCommit = null;
+
     public ?string $error = null;
 
     /** The reason the last tick from the browser failed. */
@@ -64,6 +71,10 @@ class ThingPage extends Component
 
     private ThingProjects $thingProjects;
 
+    private ReadGitCommitHeader $readGitCommitHeader;
+
+    private ReadGitCommitChanges $readGitCommitChanges;
+
     // Livewire makes the component itself, so the dependencies come in through boot instead of the constructor.
     public function boot(
         ReadThing $readThing,
@@ -75,6 +86,8 @@ class ThingPage extends Component
         RenderBody $renderBody,
         ToggleTodoItem $toggleTodoItem,
         ThingProjects $thingProjects,
+        ReadGitCommitHeader $readGitCommitHeader,
+        ReadGitCommitChanges $readGitCommitChanges,
     ): void {
         $this->readThing = $readThing;
         $this->orderedFiles = $orderedFiles;
@@ -85,6 +98,23 @@ class ThingPage extends Component
         $this->renderBody = $renderBody;
         $this->toggleTodoItem = $toggleTodoItem;
         $this->thingProjects = $thingProjects;
+        $this->readGitCommitHeader = $readGitCommitHeader;
+        $this->readGitCommitChanges = $readGitCommitChanges;
+    }
+
+    public function showCommit(string $hash): void
+    {
+        // Only a commit of the thing can open, so the browser cannot read other commits.
+        if ($this->commit($hash) === null) {
+            return;
+        }
+
+        $this->openCommit = $hash;
+    }
+
+    public function closeCommit(): void
+    {
+        $this->openCommit = null;
     }
 
     public function edit(string $fileName): void
@@ -188,6 +218,11 @@ class ThingPage extends Component
             }
         }
 
+        // The commit that was connected last is first.
+        // ponytail: one git process for each commit on each render. Read all hashes of a repository in one `git show` when a thing has many commits.
+        $commits = array_reverse($thing->commits);
+        $openCommit = $this->openCommit === null ? null : $this->commit($this->openCommit);
+
         return view('dfr::thing-page', [
             'thing' => $thing,
             'parent' => $thing->parent === null ? null : ($this->readThing)($thing->parent),
@@ -195,7 +230,22 @@ class ThingPage extends Component
             'documents' => $documents,
             'bodies' => $bodies,
             'progress' => $progress,
+            'commits' => $commits,
+            'headers' => array_map(fn (GitCommit $commit) => ($this->readGitCommitHeader)($commit), $commits),
+            'openHeader' => $openCommit === null ? null : ($this->readGitCommitHeader)($openCommit),
+            'openChanges' => $openCommit === null ? [] : ($this->readGitCommitChanges)($openCommit),
         ])->title($thing->name);
+    }
+
+    private function commit(string $hash): ?GitCommit
+    {
+        foreach ($this->thing()->commits as $commit) {
+            if ($commit->hash === $hash) {
+                return $commit;
+            }
+        }
+
+        return null;
     }
 
     private function thing(): Thing
