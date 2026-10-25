@@ -9,7 +9,7 @@ it('makes a thing and shows only its ID', function () {
     expect($process->getExitCode())->toBe(0)
         ->and($id)->toMatch('/^[2-9a-hjkmnp-z]{3}$/')
         ->and(json_decode((string) file_get_contents($this->thingFolder($id).'/.thing.json'), true))
-        ->toBe(['name' => 'login page', 'files' => []]);
+        ->toBe(['name' => 'login page', 'status' => null, 'parent' => null, 'commits' => [], 'files' => []]);
 });
 
 it('fails on an empty name', function () {
@@ -27,4 +27,20 @@ it('uses the things_path from the config file', function () {
     $id = $this->init();
 
     expect(is_file("$this->home/elsewhere/$id/.thing.json"))->toBeTrue();
+});
+
+it('makes a child of another thing', function () {
+    $parent = $this->init('parent');
+    $child = trim($this->dfr(['init', 'child', '--parent', $parent])->getOutput());
+
+    expect($this->thingData($child)['parent'])->toBe($parent);
+});
+
+it('fails and makes nothing when the parent does not exist', function () {
+    $process = $this->dfr(['init', 'child', '--parent', 'zzz']);
+
+    expect($process->getExitCode())->toBe(1)
+        ->and($process->getOutput())->toBe('')
+        ->and($process->getErrorOutput())->toContain('No thing has the ID zzz.')
+        ->and(glob("$this->home/.dfr/*"))->toBe([]);
 });

@@ -7,7 +7,8 @@ namespace Domain\Dfr\Commands;
 use Domain\Dfr\Actions\ChangeTodos;
 use Domain\Dfr\Actions\InsertTodoItems;
 use Domain\Dfr\Actions\PickTodoItems;
-use Domain\Dfr\Actions\ReadThing;
+use Domain\Dfr\Actions\RunOnThing;
+use Domain\Dfr\Data\Thing;
 use Domain\Dfr\Data\TodoChange;
 use Illuminate\Console\Command;
 
@@ -18,7 +19,7 @@ class TodoAddAfterCommand extends Command
     protected $description = 'Add items after an item.';
 
     public function __construct(
-        private ReadThing $readThing,
+        private RunOnThing $runOnThing,
         private ChangeTodos $changeTodos,
         private PickTodoItems $pickTodoItems,
         private InsertTodoItems $insertTodoItems,
@@ -28,35 +29,28 @@ class TodoAddAfterCommand extends Command
 
     public function handle(): int
     {
-        $id = $this->argument('id');
-        $thing = ($this->readThing)($id);
+        return ($this->runOnThing)($this, $this->argument('id'), function (Thing $thing) {
+            $name = $this->option('list');
+            $search = $this->argument('item');
+            $texts = $this->argument('items');
 
-        if ($thing === null) {
-            $this->output->getErrorStyle()->writeln("No thing has the ID $id.");
+            $errors = ($this->changeTodos)($thing, function (array $lists) use ($thing, $name, $search, $texts) {
+                $picked = ($this->pickTodoItems)($lists, $name, [$search]);
 
-            return 1;
-        }
+                if ($picked->errors !== []) {
+                    return new TodoChange([], $picked->errors);
+                }
 
-        $name = $this->option('list');
-        $search = $this->argument('item');
-        $texts = $this->argument('items');
+                $item = $picked->items[0];
 
-        $errors = ($this->changeTodos)($thing, function (array $lists) use ($thing, $name, $search, $texts) {
-            $picked = ($this->pickTodoItems)($lists, $name, [$search]);
+                return new TodoChange([$item->file => ($this->insertTodoItems)($thing, $item, $item->line + 1, $texts)], []);
+            });
 
-            if ($picked->errors !== []) {
-                return new TodoChange([], $picked->errors);
+            foreach ($errors as $error) {
+                $this->output->getErrorStyle()->writeln($error);
             }
 
-            $item = $picked->items[0];
-
-            return new TodoChange([$item->file => ($this->insertTodoItems)($thing, $item, $item->line + 1, $texts)], []);
+            return $errors === [] ? 0 : 1;
         });
-
-        foreach ($errors as $error) {
-            $this->output->getErrorStyle()->writeln($error);
-        }
-
-        return $errors === [] ? 0 : 1;
     }
 }

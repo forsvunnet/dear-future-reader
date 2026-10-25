@@ -39,3 +39,11 @@ it('fails on an unknown ID', function (array $command) {
     'fm:add' => [['zzz', 'fm:add', 'plan.md', 'a: 1']],
     'a path as ID' => [['../x', 'read:all']],
 ]);
+
+it('shows the file as JSON, with the frontmatter and the body apart', function () {
+    $id = $this->init();
+    $this->dfr([$id, 'write', 'plan.md'], "---\nstatus: draft\n---\nBody\n");
+
+    expect(json_decode($this->dfr([$id, 'read', 'plan.md', '--json'])->getOutput(), true))
+        ->toBe(['file' => 'plan.md', 'frontmatter' => 'status: draft', 'body' => "Body\n"]);
+});

@@ -7,8 +7,9 @@ namespace Domain\Dfr\Commands;
 use Domain\Dfr\Actions\AppendContent;
 use Domain\Dfr\Actions\ChangeFile;
 use Domain\Dfr\Actions\ReadInput;
-use Domain\Dfr\Actions\ReadThing;
+use Domain\Dfr\Actions\RunOnThing;
 use Domain\Dfr\Actions\ValidFileName;
+use Domain\Dfr\Data\Thing;
 use Illuminate\Console\Command;
 
 class WriteAppendCommand extends Command
@@ -18,7 +19,7 @@ class WriteAppendCommand extends Command
     protected $description = 'Add to the end of the file.';
 
     public function __construct(
-        private ReadThing $readThing,
+        private RunOnThing $runOnThing,
         private ValidFileName $validFileName,
         private ReadInput $readInput,
         private ChangeFile $changeFile,
@@ -29,25 +30,18 @@ class WriteAppendCommand extends Command
 
     public function handle(): int
     {
-        $id = $this->argument('id');
-        $fileName = $this->argument('file');
-        $thing = ($this->readThing)($id);
+        return ($this->runOnThing)($this, $this->argument('id'), function (Thing $thing) {
+            $fileName = $this->argument('file');
+            if (! ($this->validFileName)($fileName)) {
+                $this->output->getErrorStyle()->writeln("$fileName is not a valid filename. It must not contain \"/\" or start with \".\".");
 
-        if ($thing === null) {
-            $this->output->getErrorStyle()->writeln("No thing has the ID $id.");
+                return 1;
+            }
 
-            return 1;
-        }
+            $content = ($this->readInput)($this->argument('content'));
+            ($this->changeFile)($thing, $fileName, fn (string $oldContent) => ($this->appendContent)($oldContent, $content));
 
-        if (! ($this->validFileName)($fileName)) {
-            $this->output->getErrorStyle()->writeln("$fileName is not a valid filename. It must not contain \"/\" or start with \".\".");
-
-            return 1;
-        }
-
-        $content = ($this->readInput)($this->argument('content'));
-        ($this->changeFile)($thing, $fileName, fn (string $oldContent) => ($this->appendContent)($oldContent, $content));
-
-        return 0;
+            return 0;
+        });
     }
 }

@@ -3,6 +3,10 @@
 # The current folder stays the same, because git:add reads the git repository in it.
 set -euo pipefail
 
+# laravel/pao removes tabs and blank lines from artisan output when an agent runs it.
+# The output of dfr is file content and columns, so it must stay exact.
+export PAO_DISABLE=1
+
 root="$(dirname "$(realpath "$0")")"
 artisan="$root/artisan"
 

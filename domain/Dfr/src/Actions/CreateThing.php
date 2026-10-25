@@ -16,7 +16,10 @@ class CreateThing
         private SaveThing $saveThing,
     ) {}
 
-    public function __invoke(string $name): Thing
+    /**
+     * @param  ?string  $parent  The ID of an existing thing. A new thing has no children, so it cannot make a circle.
+     */
+    public function __invoke(string $name, ?string $parent = null): Thing
     {
         if (! is_dir($this->root->path) && ! @mkdir($this->root->path, 0777, true) && ! is_dir($this->root->path)) {
             throw new RuntimeException("Could not make the folder {$this->root->path}.");
@@ -36,7 +39,7 @@ class CreateThing
             }
         }
 
-        $thing = new Thing($id, $folder, $name, []);
+        $thing = new Thing(id: $id, folder: $folder, name: $name, status: null, parent: $parent, commits: [], files: []);
         ($this->saveThing)($thing);
 
         return $thing;

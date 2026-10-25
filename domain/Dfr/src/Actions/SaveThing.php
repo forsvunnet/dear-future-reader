@@ -13,14 +13,18 @@ class SaveThing
 {
     public function __construct(
         private WriteFileAtomically $writeFile,
+        private EncodeJson $encodeJson,
     ) {}
 
     public function __invoke(Thing $thing): void
     {
-        $json = json_encode(
-            ['name' => $thing->name, 'files' => $thing->files],
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR,
-        );
+        $json = ($this->encodeJson)([
+            'name' => $thing->name,
+            'status' => $thing->status,
+            'parent' => $thing->parent,
+            'commits' => $thing->commits,
+            'files' => $thing->files,
+        ]);
 
         ($this->writeFile)("$thing->folder/.thing.json", $json."\n");
     }

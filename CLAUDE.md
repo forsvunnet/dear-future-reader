@@ -29,4 +29,5 @@ After the report, update "Current status" below.
 - Run the tests with `./vendor/bin/pest`. Run Larastan with `./vendor/bin/phpstan analyse`.
 - Phase 2 is done. The core commands are in the Dfr domain in `domain/Dfr/`.
 - Phase 3 is done. The todo commands are in the Dfr domain too.
-- Next step: phase 4, rest of the CLI.
+- Phase 4 is done. All commands in the README work. Each command on a thing goes through `RunOnThing`, which checks the ID and writes the log.
+- Next step: phase 5, skills.

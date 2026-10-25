@@ -9,9 +9,9 @@ use Domain\Dfr\Actions\ChangeTodos;
 use Domain\Dfr\Actions\InsertTodoItems;
 use Domain\Dfr\Actions\MatchTodoLists;
 use Domain\Dfr\Actions\PickTodoList;
-use Domain\Dfr\Actions\ReadThing;
+use Domain\Dfr\Actions\RunOnThing;
+use Domain\Dfr\Data\Thing;
 use Domain\Dfr\Data\TodoChange;
-use Domain\Dfr\Data\TodoList;
 use Illuminate\Console\Command;
 
 class TodoAddCommand extends Command
@@ -21,7 +21,7 @@ class TodoAddCommand extends Command
     protected $description = 'Add items to the end of a todo list.';
 
     public function __construct(
-        private ReadThing $readThing,
+        private RunOnThing $runOnThing,
         private ChangeTodos $changeTodos,
         private MatchTodoLists $matchTodoLists,
         private PickTodoList $pickTodoList,
@@ -33,38 +33,31 @@ class TodoAddCommand extends Command
 
     public function handle(): int
     {
-        $id = $this->argument('id');
-        $thing = ($this->readThing)($id);
+        return ($this->runOnThing)($this, $this->argument('id'), function (Thing $thing) {
+            $name = $this->option('list');
+            $texts = $this->argument('items');
 
-        if ($thing === null) {
-            $this->output->getErrorStyle()->writeln("No thing has the ID $id.");
+            $errors = ($this->changeTodos)($thing, function (array $lists) use ($thing, $name, $texts) {
+                if ($name !== null && ($this->matchTodoLists)($lists, $name) === []) {
+                    return new TodoChange(['todo.md' => ($this->addTodoList)($thing, $name, $texts)], []);
+                }
 
-            return 1;
-        }
+                $picked = ($this->pickTodoList)($lists, $name);
 
-        $name = $this->option('list');
-        $texts = $this->argument('items');
+                if ($picked->list === null) {
+                    return new TodoChange([], [(string) $picked->error]);
+                }
 
-        $errors = ($this->changeTodos)($thing, function (array $lists) use ($thing, $name, $texts) {
-            if ($name !== null && ($this->matchTodoLists)($lists, $name) === []) {
-                return new TodoChange(['todo.md' => ($this->addTodoList)($thing, $name, $texts)], []);
+                $last = $picked->list->items[array_key_last($picked->list->items)];
+
+                return new TodoChange([$last->file => ($this->insertTodoItems)($thing, $last, $last->line + 1, $texts)], []);
+            });
+
+            foreach ($errors as $error) {
+                $this->output->getErrorStyle()->writeln($error);
             }
 
-            $picked = ($this->pickTodoList)($lists, $name);
-
-            if ($picked->list === null) {
-                return new TodoChange([], [(string) $picked->error]);
-            }
-
-            $last = $picked->list->items[array_key_last($picked->list->items)];
-
-            return new TodoChange([$last->file => ($this->insertTodoItems)($thing, $last, $last->line + 1, $texts)], []);
+            return $errors === [] ? 0 : 1;
         });
-
-        foreach ($errors as $error) {
-            $this->output->getErrorStyle()->writeln($error);
-        }
-
-        return $errors === [] ? 0 : 1;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\Dfr\Actions;
 
+use Domain\Dfr\Data\GitCommit;
 use Domain\Dfr\Data\Thing;
 use Domain\Dfr\ValueObjects\ThingsRoot;
 use RuntimeException;
@@ -37,6 +38,25 @@ class ReadThing
             throw new RuntimeException("$dataPath does not have a name and a list of files.");
         }
 
-        return new Thing($id, $folder, $data['name'], array_values(array_filter($data['files'], is_string(...))));
+        // The other fields came after the first version, so they can be missing.
+        $status = $data['status'] ?? null;
+        $parent = $data['parent'] ?? null;
+        $commits = [];
+
+        foreach ((array) ($data['commits'] ?? []) as $commit) {
+            if (is_array($commit) && is_string($commit['hash'] ?? null) && is_string($commit['repository'] ?? null)) {
+                $commits[] = new GitCommit($commit['hash'], $commit['repository']);
+            }
+        }
+
+        return new Thing(
+            id: $id,
+            folder: $folder,
+            name: $data['name'],
+            status: is_string($status) ? $status : null,
+            parent: is_string($parent) ? $parent : null,
+            commits: $commits,
+            files: array_values(array_filter($data['files'], is_string(...))),
+        );
     }
 }

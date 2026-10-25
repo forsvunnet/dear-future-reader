@@ -32,10 +32,14 @@ abstract class DfrTestCase extends TestCase
 
     /**
      * @param  list<string>  $arguments
+     * @param  ?string  $folder  The current folder of the command. The default is the home folder.
+     * @param  array<string, string>  $env
      */
-    public function dfr(array $arguments, ?string $input = null): Process
+    public function dfr(array $arguments, ?string $input = null, ?string $folder = null, array $env = []): Process
     {
-        $process = new Process([base_path('dfr'), ...$arguments], $this->home, ['HOME' => $this->home], $input);
+        // false removes the variable, so a test never gets the session of the Claude Code that runs it.
+        $env = [...['HOME' => $this->home, 'CLAUDE_CODE_SESSION_ID' => false], ...$env];
+        $process = new Process([base_path('dfr'), ...$arguments], $folder ?? $this->home, $env, $input);
         $process->run();
 
         return $process;
@@ -52,5 +56,13 @@ abstract class DfrTestCase extends TestCase
     public function thingFolder(string $id): string
     {
         return "$this->home/.dfr/$id";
+    }
+
+    /**
+     * @return array<mixed> The content of the .thing.json file.
+     */
+    public function thingData(string $id): array
+    {
+        return (array) json_decode((string) file_get_contents($this->thingFolder($id).'/.thing.json'), true);
     }
 }

@@ -26,6 +26,14 @@ class AddToOrder
             return;
         }
 
-        ($this->saveThing)(new Thing($current->id, $current->folder, $current->name, [...$current->files, $fileName]));
+        ($this->saveThing)(new Thing(
+            id: $current->id,
+            folder: $current->folder,
+            name: $current->name,
+            status: $current->status,
+            parent: $current->parent,
+            commits: $current->commits,
+            files: [...$current->files, $fileName],
+        ));
     }
 }

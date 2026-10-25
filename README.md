@@ -69,11 +69,19 @@ dfr $ID git:add [HASH]                  # Connect a git commit to the thing.
 dfr $ID git:remove [HASH]               # Remove the connection to a git commit.
 ```
 
-Add `--json` to `list`, `search`, `read`, `read:all` and `log` to get the output as JSON.
+`list` shows one thing on each line: the ID, the name and the status, with a tab between them. `--tree` puts each child under its parent, with two spaces of indent for each level. `--tree` does not work together with `--status` or `--json`.
+
+`status ""` removes the status.
+
+`search` ignores case. It shows one match on each line: the ID, the filename, the line number and the line, with a tab between them. It does not search archived files.
+
+`log` shows one command on each line: the time in UTC, the session, the exit code and the command, with a tab between them. A failed command is in the log too. `init` is not in the log.
+
+Add `--json` to `list`, `search`, `read`, `read:all` and `log` to get the output as JSON. With `--json`, `read` and `read:all` give the frontmatter and the body of each file apart.
 
 A thing has one parent at most. The parent must not be the thing itself, or a child of the thing at any level. If it is, the command fails and changes nothing.
 
-`git:add` stores the hash together with the path of the git repository in the current folder. If the commit does not exist in that repository, the command fails.
+`git:add` stores the full hash together with the path of the git repository in the current folder. If the commit does not exist in that repository, the command fails. `git:remove` takes the full hash or the first 4 or more characters of it.
 
 ### Read
 

@@ -6,8 +6,9 @@ namespace Domain\Dfr\Commands;
 
 use Domain\Dfr\Actions\ChangeTodos;
 use Domain\Dfr\Actions\PickTodoItems;
-use Domain\Dfr\Actions\ReadThing;
+use Domain\Dfr\Actions\RunOnThing;
 use Domain\Dfr\Actions\TickTodoItems;
+use Domain\Dfr\Data\Thing;
 use Domain\Dfr\Data\TodoChange;
 use Illuminate\Console\Command;
 
@@ -18,7 +19,7 @@ class TodoTickCommand extends Command
     protected $description = 'Tick todo items.';
 
     public function __construct(
-        private ReadThing $readThing,
+        private RunOnThing $runOnThing,
         private ChangeTodos $changeTodos,
         private PickTodoItems $pickTodoItems,
         private TickTodoItems $tickTodoItems,
@@ -28,32 +29,25 @@ class TodoTickCommand extends Command
 
     public function handle(): int
     {
-        $id = $this->argument('id');
-        $thing = ($this->readThing)($id);
+        return ($this->runOnThing)($this, $this->argument('id'), function (Thing $thing) {
+            $name = $this->option('list');
+            $searches = $this->argument('items');
 
-        if ($thing === null) {
-            $this->output->getErrorStyle()->writeln("No thing has the ID $id.");
+            $errors = ($this->changeTodos)($thing, function (array $lists) use ($thing, $name, $searches) {
+                $picked = ($this->pickTodoItems)($lists, $name, $searches);
 
-            return 1;
-        }
+                if ($picked->errors !== []) {
+                    return new TodoChange([], $picked->errors);
+                }
 
-        $name = $this->option('list');
-        $searches = $this->argument('items');
+                return new TodoChange(($this->tickTodoItems)($thing, $picked->items, true), []);
+            });
 
-        $errors = ($this->changeTodos)($thing, function (array $lists) use ($thing, $name, $searches) {
-            $picked = ($this->pickTodoItems)($lists, $name, $searches);
-
-            if ($picked->errors !== []) {
-                return new TodoChange([], $picked->errors);
+            foreach ($errors as $error) {
+                $this->output->getErrorStyle()->writeln($error);
             }
 
-            return new TodoChange(($this->tickTodoItems)($thing, $picked->items, true), []);
+            return $errors === [] ? 0 : 1;
         });
-
-        foreach ($errors as $error) {
-            $this->output->getErrorStyle()->writeln($error);
-        }
-
-        return $errors === [] ? 0 : 1;
     }
 }
