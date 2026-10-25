@@ -30,6 +30,8 @@ Dear Future Reader is a Laravel 13 app on the TALL stack: Tailwind, Alpine.js, L
 
 The `dfr` script calls `php artisan` inside the project.
 
+The things are in `~/.dfr/`. To use a different folder, set `things_path` in `~/.config/dfr/config.json`. See [doc/decisions.md](doc/decisions.md).
+
 ## Quick start
 
 Create a thing:
@@ -60,7 +62,7 @@ dfr search [TEXT]                       # Find text in the context files of all 
 dfr $ID rename [NAME]                   # Change the name of the thing. The ID stays the same.
 dfr $ID status                          # Show the status of the thing.
 dfr $ID status [STATUS]                 # Set the status of the thing. The status is free text.
-dfr $ID log                             # Show which session changed which file, and when.
+dfr $ID log                             # Show which session ran which command on the thing, and when.
 dfr $ID parent [PARENT_ID]              # Make the thing a child of another thing.
 dfr $ID parent:remove                   # Remove the parent of the thing.
 dfr $ID git:add [HASH]                  # Connect a git commit to the thing.
@@ -90,8 +92,6 @@ dfr $ID write:prepend [FILENAME]  # Same as write, but adds to the start of the 
 ```
 
 The filename is required. The content can come from a pipe, from arguments, or from both. With both, the pipe data comes first.
-
-The command gives a warning if the required frontmatter is missing.
 
 ### Frontmatter
 
@@ -142,6 +142,8 @@ dfr $ID files              # List the files.
 dfr $ID files:reorder      # Put the files in a new order.
 dfr $ID files:archive      # Archive the given files.
 ```
+
+`files:reorder` takes filenames in the new order. The files that are not given come after them, in their old order.
 
 `files:archive` takes filenames as arguments. Each name must match a file exactly. If one name does not match, the command fails and archives nothing.
 
