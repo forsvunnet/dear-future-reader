@@ -88,10 +88,12 @@ dfr $ID read:all --fm     # Show only the frontmatter of each file. Also --front
 ```shell
 dfr $ID write [FILENAME]          # Write the file. Overwrites the file if it exists.
 dfr $ID write:append [FILENAME]   # Same as write, but adds to the end of the file.
-dfr $ID write:prepend [FILENAME]  # Same as write, but adds to the start of the file.
+dfr $ID write:prepend [FILENAME]  # Same as write, but adds to the start of the file, after the frontmatter.
 ```
 
-The filename is required. The content can come from a pipe, from arguments, or from both. With both, the pipe data comes first.
+The filename is required. The content can come from a pipe, from arguments, or from both. With both, the pipe data comes first. The arguments become one line, with a space between each argument.
+
+A filename must not contain `/` or start with `.`.
 
 ### Frontmatter
 

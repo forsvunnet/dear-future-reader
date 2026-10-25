@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Symfony\Component\Process\Process;
 
 it('runs artisan from another folder through a symlink', function () {
-    $folder = sys_get_temp_dir() . '/dfr-test-' . bin2hex(random_bytes(4));
+    $folder = sys_get_temp_dir().'/dfr-test-'.bin2hex(random_bytes(4));
     mkdir($folder);
     symlink(base_path('dfr'), "$folder/dfr");
 
