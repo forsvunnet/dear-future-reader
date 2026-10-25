@@ -71,6 +71,8 @@ Add `--json` to `list`, `search`, `read`, `read:all` and `log` to get the output
 
 A thing has one parent at most. The parent must not be the thing itself, or a child of the thing at any level. If it is, the command fails and changes nothing.
 
+`git:add` stores the hash together with the path of the git repository in the current folder. If the commit does not exist in that repository, the command fails.
+
 ### Read
 
 ```shell
