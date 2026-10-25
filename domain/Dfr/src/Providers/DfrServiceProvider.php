@@ -34,6 +34,7 @@ use Domain\Dfr\Commands\WriteCommand;
 use Domain\Dfr\Commands\WritePrependCommand;
 use Domain\Dfr\Contracts\FindGitCommit;
 use Domain\Dfr\ValueObjects\ThingsRoot;
+use Illuminate\Foundation\Console\ServeCommand;
 use Illuminate\Support\ServiceProvider;
 
 class DfrServiceProvider extends ServiceProvider
@@ -42,6 +43,9 @@ class DfrServiceProvider extends ServiceProvider
     {
         $this->app->singleton(ThingsRoot::class, fn () => (new LoadThingsRoot)((string) getenv('HOME')));
         $this->app->bind(FindGitCommit::class, FindGitCommitWithGit::class);
+
+        // `php artisan serve` passes only a few env vars to the PHP server. The Web UI needs HOME to find the things.
+        ServeCommand::$passthroughVariables[] = 'HOME';
     }
 
     public function boot(): void
@@ -75,5 +79,7 @@ class DfrServiceProvider extends ServiceProvider
             FilesArchiveCommand::class,
         ]);
 
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'dfr');
+        $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
     }
 }

@@ -14,6 +14,10 @@ class LoadThingsRoot
 {
     public function __invoke(string $home): ThingsRoot
     {
+        if ($home === '') {
+            throw new RuntimeException('HOME is not set, so the folder of the things is not known.');
+        }
+
         $configPath = "$home/.config/dfr/config.json";
         $path = '~/.dfr';
 

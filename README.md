@@ -180,7 +180,17 @@ Start the Web UI:
 php artisan serve
 ```
 
-The Web UI lists each thing. You can read and edit the context files of each thing.
+Then open http://localhost:8000. Run `npm run build` first if `public/build/` does not exist.
+
+- The start page lists the things as a tree, with the ID, the name and the status.
+- The page of a thing shows its context files in order. The body shows as Markdown, and the frontmatter as YAML. Archived files do not show.
+- **Edit** opens the full content of a file, with its frontmatter. **Save** writes the file.
+
+Save fails when the file changed after you opened it, for example when a session wrote to it. Your text stays in the editor, so you can copy it.
+
+Each save writes a log line with the session `web`.
+
+The Web UI has no login. `php artisan serve` listens only on your own machine.
 
 ## License
 
