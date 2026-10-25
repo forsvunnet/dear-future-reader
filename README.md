@@ -1,47 +1,117 @@
-Dear Future Reader
+# Dear Future Reader
 
-Agents quickly reach their session limit and when working with multiple concurrent session it's difficutl to keep track of what goes in which session.
+Shared context files that let many agent sessions work on the same task.
 
-Dear future reader offers a simple yet effective remedy
+## Why
 
-Each thing, be it task, feature, bugfix, planning session etc.. get's it's own folder, and session or sessions on the same thing will read, write and update the same context files. Context files could be plan, todo, affected files, prompts, instructions, progress, reports, facts, etc....
+Agents reach their session limit fast. When many sessions run at the same time, it is difficult to keep track of what goes in which session.
 
-It comes in three parts:
+## How it works
 
-- **CLI**: commands to create and update the context files.
-- **Skills**: instructions that teach agents how to use the CLI.
-- **Web UI**: a page to browse and read the context files.
+Each thing gets its own folder. A thing can be a task, a feature, a bug fix, a planning session and so on.
 
-To begin:
+All sessions on the same thing read, write and update the same context files. Context files can be plans, todos, affected files, prompts, instructions, progress, reports, facts and so on.
+
+## Parts
+
+Dear Future Reader comes in three parts:
+
+- **CLI**: the `dfr` command to create and update the context files.
+- **Skills**: Claude Code skills that teach agents how to use `dfr`.
+- **Web UI**: a page that lists each thing and lets you read and edit its context files.
+
+## Install
+
+Dear Future Reader is a Laravel 13 app on the TALL stack: Tailwind, Alpine.js, Laravel and Livewire.
+
+1. Clone the repository.
+2. Run `composer install` and `npm install`.
+3. Add the `dfr` script in the project root to your `PATH`.
+
+The `dfr` script calls `php artisan` inside the project.
+
+## Quick start
+
+Create a thing:
 
 ```shell
-ID="$(dft init name-of-thing)"
+ID="$(dfr init name-of-thing)"
 ```
 
-The output of the commad will return an id that you must use to do things in the name of the thing.
+The command returns an ID. Use this ID in all other commands for the thing.
+
+Write a context file:
 
 ```shell
-dtf $ID write [FILENAME] # You can pipe into write, or use arguments, or both. in the case of both it will be concattenated with the pipe data first. Filename is required. If the file exists it will be overwritten. Will give warnings if required frontmatter is not present.
-
-dtf $ID write:append [FILENAME] # Same as write, but will append instead of overwrite
-
-dtf $ID write:prepend [FILENAME] # Same as write, but will prepend instead of overwrite
-
-dtf $ID fm [FILENAME] [YAML] # Frontmatter: write or replace frontmatter
-dtf $ID fm:add [FILENAME] [YAML] # Frontmatter: add or replace frontmatter. existing attributes will be overwritten or kept, new attributes will be added.
-
-dft $ID todo "Setup" add "Define dependencies" "Install packages" "Run build command" # Will append three items to the "Setup" todolist. "Setup" must be unique and it has to be a title or text line in one of the files followed by one or more markdown todo items.
-dft $ID todo "Setup" add:after "install" "Verify installation" # same as todo $NAME add, but will instead add items after the install step. Useful if you want to inject items in the middle of a todo.
-dft $ID todo "Setup" add:before "build" "Verify installation" # same as after, but inserts before instead.
-dft $ID todo "Setup" tick "deps" "install" "build" # Will tick the three tasks inside setup if it finds unique lines for each of the args. if one is not found the command will error and nothing gets ticked.
-dft $ID todo "Setup" untick "deps" "install" "build" # Will tick the three tasks inside setup if it finds unique lines for each of the args. if one is not found the command will error and nothing gets ticked.
+echo "Build the login page" | dfr $ID write plan.md
 ```
 
-Other commands
+## CLI usage
 
-dft $ID files - lists the files
-dft $ID files:reorder - put the files in new order
-dft $ID files:content - returns all filecontent content everything in order
+### Write
 
+```shell
+dfr $ID write [FILENAME]          # Write the file. Overwrites the file if it exists.
+dfr $ID write:append [FILENAME]   # Same as write, but adds to the end of the file.
+dfr $ID write:prepend [FILENAME]  # Same as write, but adds to the start of the file.
+```
 
-dft $ID files:archive - archive files. args are filenames and they must match. if any file doesn't match exactly then the command will error and no file will be archived
+The filename is required. The content can come from a pipe, from arguments, or from both. With both, the pipe data comes first.
+
+The command gives a warning if the required frontmatter is missing.
+
+### Frontmatter
+
+```shell
+dfr $ID fm [FILENAME] [YAML]      # Write or replace all of the frontmatter.
+dfr $ID fm:add [FILENAME] [YAML]  # Add or replace the given attributes. Keeps the other attributes.
+```
+
+### Todo
+
+A todo list is a title or a text line in a file, followed by one or more Markdown todo items. The title must be unique.
+
+```shell
+dfr $ID todo "Setup" add "Define dependencies" "Install packages" "Run build command"
+dfr $ID todo "Setup" add:after "install" "Verify installation"
+dfr $ID todo "Setup" add:before "build" "Verify installation"
+dfr $ID todo "Setup" tick "deps" "install" "build"
+dfr $ID todo "Setup" untick "deps" "install" "build"
+```
+
+- `add` adds the items to the end of the list.
+- `add:after` adds the items after the matching item.
+- `add:before` adds the items before the matching item.
+- `tick` ticks each matching item.
+- `untick` unticks each matching item.
+
+Each argument must match one unique line. If one argument does not match, the command fails and changes nothing.
+
+### Files
+
+```shell
+dfr $ID files              # List the files.
+dfr $ID files:reorder      # Put the files in a new order.
+dfr $ID files:content      # Show the content of all files, in order.
+dfr $ID files:archive      # Archive the given files.
+```
+
+`files:archive` takes filenames as arguments. Each name must match a file exactly. If one name does not match, the command fails and archives nothing.
+
+## Skills
+
+The skills are in the `skills/` folder. Copy or link them into `~/.claude/skills/`.
+
+## Web UI
+
+Start the Web UI:
+
+```shell
+php artisan serve
+```
+
+The Web UI lists each thing. You can read and edit the context files of each thing.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
