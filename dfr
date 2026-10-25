@@ -29,4 +29,15 @@ fi
 id="$1"
 command="$2"
 shift 2
+
+# The todo commands have two words: dfr $ID todo add [ITEM...]
+if [ "$command" = todo ]; then
+    if [ $# -lt 1 ]; then
+        echo "dfr: give a todo command, like add, tick or next." >&2
+        exit 1
+    fi
+    command="todo:$1"
+    shift
+fi
+
 exec php "$artisan" "dfr:$command" "$id" "$@"

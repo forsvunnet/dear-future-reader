@@ -28,4 +28,5 @@ After the report, update "Current status" below.
 - Phase 1 is done. The Laravel app, Pest, Larastan and the `dfr` script are set up.
 - Run the tests with `./vendor/bin/pest`. Run Larastan with `./vendor/bin/phpstan analyse`.
 - Phase 2 is done. The core commands are in the Dfr domain in `domain/Dfr/`.
-- Next step: phase 3, todo commands.
+- Phase 3 is done. The todo commands are in the Dfr domain too.
+- Next step: phase 4, rest of the CLI.

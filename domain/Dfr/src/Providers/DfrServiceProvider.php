@@ -11,6 +11,12 @@ use Domain\Dfr\Commands\InitCommand;
 use Domain\Dfr\Commands\ListCommand;
 use Domain\Dfr\Commands\ReadAllCommand;
 use Domain\Dfr\Commands\ReadCommand;
+use Domain\Dfr\Commands\TodoAddAfterCommand;
+use Domain\Dfr\Commands\TodoAddBeforeCommand;
+use Domain\Dfr\Commands\TodoAddCommand;
+use Domain\Dfr\Commands\TodoNextCommand;
+use Domain\Dfr\Commands\TodoTickCommand;
+use Domain\Dfr\Commands\TodoUntickCommand;
 use Domain\Dfr\Commands\WriteAppendCommand;
 use Domain\Dfr\Commands\WriteCommand;
 use Domain\Dfr\Commands\WritePrependCommand;
@@ -36,6 +42,12 @@ class DfrServiceProvider extends ServiceProvider
             WritePrependCommand::class,
             FmCommand::class,
             FmAddCommand::class,
+            TodoAddCommand::class,
+            TodoAddAfterCommand::class,
+            TodoAddBeforeCommand::class,
+            TodoTickCommand::class,
+            TodoUntickCommand::class,
+            TodoNextCommand::class,
         ]);
     }
 }

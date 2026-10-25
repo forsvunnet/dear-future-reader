@@ -104,7 +104,9 @@ dfr $ID fm:add [FILENAME] [YAML]  # Add or replace the given attributes. Keeps t
 
 ### Todo
 
-A todo list is a title or a text line in a file, followed by one or more Markdown todo items. The title must be unique.
+A todo list is a run of Markdown todo items, like `- [ ] Install packages`. Blank lines between the items are part of the list. The first other line ends the list.
+
+The title of the list is the nearest line above the first item that is not blank. The `#` marks and a `:` at the end are not part of the title. Lines in the frontmatter and in code blocks are never items.
 
 ```shell
 dfr $ID todo add [ITEM...] --list [NAME]
@@ -115,17 +117,20 @@ The `--list` flag is optional. It gives the name of the todo list.
 - With `--list`, the command looks only in that todo list.
 - Without `--list`, the command looks in all todo lists. Each argument must then match one unique line across all lists.
 - Without `--list`, `add` and `next` need exactly one todo list in the thing. If there are more, the command fails.
+- When no list matches `--list`, `add` makes a new list with a `##` title at the end of `todo.md`.
+
+An argument matches an item when the item contains the argument, with case ignored. When an item is equal to the argument, only that item matches. The `--list` name matches a title with the same rule.
 
 Examples:
 
 ```shell
 dfr $ID todo add "Define dependencies" "Install packages" "Run build command" --list "Setup"
 dfr $ID todo add:after "install" "Verify installation" --list "Setup"
-dfr $ID todo add:before "build" "Verify installation" --list "Setup"
-dfr $ID todo tick "deps" "install" "build" --list "Setup"
-dfr $ID todo untick "deps" "install" "build" --list "Setup"
+dfr $ID todo add:before "build" "Clear the cache" --list "Setup"
+dfr $ID todo tick "dependencies" "packages" "build" --list "Setup"
+dfr $ID todo untick "dependencies" "packages" "build" --list "Setup"
 dfr $ID todo next --list "Setup"
-dfr $ID todo tick "install"
+dfr $ID todo tick "verify"
 ```
 
 - `add` adds the items to the end of the list.
@@ -133,7 +138,7 @@ dfr $ID todo tick "install"
 - `add:before` adds the items before the matching item.
 - `tick` ticks each matching item.
 - `untick` unticks each matching item.
-- `next` shows the first item that is not ticked.
+- `next` shows the first item that is not ticked. When all items are ticked, it shows nothing.
 
 Each argument must match one unique line. If one argument does not match, the command fails and changes nothing.
 
