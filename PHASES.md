@@ -74,10 +74,4 @@ Done when: a new session finds the thing, reads the context and continues the wo
 
 Done when: you can find a thing, read its files and edit them in the browser.
 
-## Phase 7: Release
-
-1. Read the README again and make it match the code.
-2. Install the project on a clean machine, with only the README as help.
-3. Tag the first version.
-
 Done when: the install works from the README alone.

@@ -33,11 +33,17 @@ Shell variables do not stay between Bash calls. Write the ID itself in each comm
 
 ## Files
 
-Use these files. Add other files when the work needs them.
+Keep files short, focused and concise. New information and new work may change the direction of the work, and the files may need complete rewrites. Keeping them short makes this easier to manage.
 
-- `plan.md`: the goal, the approach and the decisions with their reasons.
+Suggested filenames and content
+
+- `plan.md`: the plan, the approach and the decisions with their reasons.
 - `todo.md`: the steps as a Markdown todo list.
-- `progress.md`: what each session did, and the next step.
+- `work-log.md`: what each session did, and the next step.
+- `review-instructions.md`: the instructions for reviewing the work. This is the verbatim text used to spawn a fresh agent for the review.
+- `review.md`: the review result and feedback on the work.
+- `qa.md`: the questions and answers related to the work.
+- `goal.md`: the goal of the work.
 
 Write the content through a pipe with a heredoc:
 
@@ -48,7 +54,7 @@ dfr $ID write plan.md <<'EOF'
 EOF
 ```
 
-`write` replaces the file. `write:append` adds to the end of the file. Do not use `write` on `progress.md`. Use `write:append`, so that the history stays.
+`write` replaces the file. `write:append` adds to the end of the file.
 
 ## While you work
 
@@ -58,10 +64,7 @@ A session can stop at any time. Write to the files as you go. Do not wait for th
 - Add a step when you find one: `dfr $ID todo add "item"`.
 - Write each decision in `plan.md` when you make it.
 - Connect each commit you make: `dfr $ID git:add HEAD`.
-
-Before you stop, append to `progress.md`: what you did, what is not solved, and the next step.
-
-After the last step, append to `progress.md` again. A step after the last append, like a commit, must not leave `progress.md` out of date.
+- After every edit log the work in `work-log.md` using append: `dfr $ID write:append work-log.md`.
 
 ## More commands
 
