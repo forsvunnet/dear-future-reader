@@ -32,4 +32,4 @@ After the report, update "Current status" below.
 - Phase 4 is done. All commands in the README work. Each command on a thing goes through `RunOnThing`, which checks the ID and writes the log.
 - Phase 5 is done. The `dfr` skill is in `skills/dfr/`. Thing `mpg` ran over two sessions with the skill.
 - Phase 6 is done. The Web UI is in the Dfr domain. Start it with `php artisan serve`.
-- Next step: phase 7, release.
+- All phases are done.

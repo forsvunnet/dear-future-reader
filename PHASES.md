@@ -73,5 +73,3 @@ Done when: a new session finds the thing, reads the context and continues the wo
 - Editing of the context files.
 
 Done when: you can find a thing, read its files and edit them in the browser.
-
-Done when: the install works from the README alone.
