@@ -164,7 +164,13 @@ dfr $ID files:archive      # Archive the given files.
 
 ## Skills
 
-The skills are in the `skills/` folder. Copy or link them into `~/.claude/skills/`.
+The skills are in the `skills/` folder. Copy or link them into `~/.claude/skills/`:
+
+```shell
+ln -s "$PWD/skills/dfr" ~/.claude/skills/dfr
+```
+
+The `dfr` skill makes a new thing when you give no ID. When you give an ID, it reads the context files of that thing and continues the work.
 
 ## Web UI
 
