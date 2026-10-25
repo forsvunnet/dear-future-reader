@@ -30,6 +30,6 @@ After the report, update "Current status" below.
 - Phase 2 is done. The core commands are in the Dfr domain in `domain/Dfr/`.
 - Phase 3 is done. The todo commands are in the Dfr domain too.
 - Phase 4 is done. All commands in the README work. Each command on a thing goes through `RunOnThing`, which checks the ID and writes the log.
-- Phase 5: the `dfr` skill is in `skills/dfr/`. Step 3, a real task over two or more sessions, is not checked yet, and there is no report.
+- Phase 5 is done. The `dfr` skill is in `skills/dfr/`. Thing `mpg` ran over two sessions with the skill.
 - Phase 6 is done. The Web UI is in the Dfr domain. Start it with `php artisan serve`.
-- Next step: finish the check of phase 5, then phase 7, release.
+- Next step: phase 7, release.

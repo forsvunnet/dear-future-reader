@@ -61,6 +61,8 @@ A session can stop at any time. Write to the files as you go. Do not wait for th
 
 Before you stop, append to `progress.md`: what you did, what is not solved, and the next step.
 
+After the last step, append to `progress.md` again. A step after the last append, like a commit, must not leave `progress.md` out of date.
+
 ## More commands
 
 Run `dfr` with no arguments to see all commands. The main ones:
