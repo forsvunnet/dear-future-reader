@@ -60,7 +60,6 @@ class TickableCheckboxRenderer implements NodeRendererInterface
         $checkbox->setAttribute('wire:click.prevent', "tick($arguments)");
         // A new key after each change of the file makes Livewire put in a new checkbox with the correct state.
         $checkbox->setAttribute('wire:key', "$this->fileName:$item->line:$this->hash");
-        $checkbox->setAttribute('aria-label', $item->text);
 
         return $checkbox;
     }

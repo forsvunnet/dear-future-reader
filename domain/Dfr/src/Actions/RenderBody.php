@@ -6,11 +6,14 @@ namespace Domain\Dfr\Actions;
 
 use Domain\Dfr\Data\TodoItem;
 use Domain\Dfr\Markdown\TickableCheckboxRenderer;
+use Domain\Dfr\Markdown\TodoItemLabelRenderer;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\TaskList\TaskListItemMarker;
 use League\CommonMark\MarkdownConverter;
+use League\CommonMark\Node\Block\Paragraph;
+use League\CommonMark\Renderer\Block\ParagraphRenderer;
 
 /**
  * Renders the body of a context file from Markdown to HTML for the Web UI.
@@ -38,6 +41,7 @@ class RenderBody
             items: array_column(array_map(fn (TodoItem $item) => [$item->line, $item], $items), 1, 0),
             firstLine: ($this->bodyFirstLine)($content),
         ), 10);
+        $environment->addRenderer(Paragraph::class, new TodoItemLabelRenderer(new ParagraphRenderer), 10);
 
         return (string) (new MarkdownConverter($environment))->convert(($this->splitFrontmatter)($content)->body);
     }

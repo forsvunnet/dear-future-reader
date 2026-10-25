@@ -138,9 +138,21 @@ it('gives each todo item a checkbox that ticks the line of the item', function (
     $this->get("/things/$id")
         ->assertOk()
         ->assertSee("wire:click.prevent=\"tick(&quot;todo.md&quot;, 5, &quot;$hash&quot;)\"", false)
-        ->assertSee("wire:click.prevent=\"tick(&quot;todo.md&quot;, 6, &quot;$hash&quot;)\"", false)
-        ->assertSee('aria-label="First"', false);
+        ->assertSee("wire:click.prevent=\"tick(&quot;todo.md&quot;, 6, &quot;$hash&quot;)\"", false);
 });
+
+it('puts the text of a todo item in the label of its checkbox', function (string $content) {
+    $id = $this->init();
+    $this->dfr([$id, 'write', 'todo.md'], $content);
+
+    // A click on the text ticks the item, because the browser sends a click on a label to its checkbox.
+    $this->get("/things/$id")
+        ->assertOk()
+        ->assertSeeInOrder(['<label><input type="checkbox"', '> First</label>'], false);
+})->with([
+    'tight list' => "- [ ] First\n- [ ] Second\n",
+    'loose list' => "- [ ] First\n\n- [ ] Second\n",
+]);
 
 it('keeps a checkbox disabled when it is not a todo item for dfr', function () {
     $id = $this->init();
