@@ -44,6 +44,7 @@ class FilesReorderCommand extends Command
                     name: $current->name,
                     parent: $current->parent,
                     repository: $current->repository,
+                    projects: $current->projects,
                     commits: $current->commits,
                     files: [...$given, ...array_diff($files, $given)],
                 );

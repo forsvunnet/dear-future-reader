@@ -54,6 +54,7 @@ class GitRemoveCommand extends Command
                     name: $current->name,
                     parent: $current->parent,
                     repository: $current->repository,
+                    projects: $current->projects,
                     commits: array_values(array_diff_key($current->commits, $matching)),
                     files: $current->files,
                 );

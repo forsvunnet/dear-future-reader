@@ -64,11 +64,13 @@ dfr $ID parent [PARENT_ID]              # Make the thing a child of another thin
 dfr $ID parent:remove                   # Remove the parent of the thing.
 dfr $ID git:add [HASH]                  # Connect a git commit to the thing.
 dfr $ID git:remove [HASH]               # Remove the connection to a git commit.
+dfr $ID project:add [PATH]              # Add the git repository of the folder to the projects. The current folder when no path.
+dfr $ID project:remove [PATH]           # Remove a project that project:add added.
 ```
 
 `init` stores the git repository of the current folder, if there is one.
 
-A thing relates to projects. A project is a git repository: the repository where `init` ran, and the repository of each commit from `git:add`.
+A thing relates to projects. A project is a git repository: the repository where `init` ran, each repository from `project:add`, and the repository of each commit from `git:add`.
 
 `list` shows one thing on each line: the ID, the name and the projects, with a tab between them. The projects show as folder names, with ", " between them. A thing with no projects has no projects column. `--tree` puts each child under its parent, with two spaces of indent for each level. `--tree` does not work together with `--json`.
 

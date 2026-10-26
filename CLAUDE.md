@@ -33,4 +33,4 @@ After the report, update "Current status" below.
 - Phase 5 is done. The `dfr` skill is in `skills/dfr/`. Thing `mpg` ran over two sessions with the skill.
 - Phase 6 is done. The Web UI is in the Dfr domain. Start it with `php artisan serve`.
 - All phases are done.
-- Each thing shows its projects: the git repository where `init` ran and the repositories of its commits. See `ThingProjects`.
+- Each thing shows its projects: the git repository where `init` ran, the repositories from `project:add` and the repositories of its commits. See `ThingProjects`.

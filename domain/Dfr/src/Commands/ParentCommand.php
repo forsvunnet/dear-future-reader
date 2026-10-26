@@ -54,6 +54,7 @@ class ParentCommand extends Command
                     name: $current->name,
                     parent: $parentId,
                     repository: $current->repository,
+                    projects: $current->projects,
                     commits: $current->commits,
                     files: $current->files,
                 );

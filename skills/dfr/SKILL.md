@@ -29,6 +29,8 @@ dfr init "short name of the task"
 
 Run `init` in the folder of the project. The thing stores the git repository of that folder.
 
+When the work is about more than one project, add each other project: `dfr $ID project:add [PATH]`. Also add a project that the work only reads.
+
 The command shows the ID. Tell the user the ID, so that a new session can continue the work.
 
 Use `dfr list` and `dfr search [TEXT]` only when the user asks you to find a thing.
@@ -78,6 +80,7 @@ A session can stop at any time. Write to the files as you go. Do not wait for th
 - Add a step when you find one: `dfr $ID todo add "item"`.
 - Write each decision in `plan.md` when you make it.
 - Connect each commit you make: `dfr $ID git:add HEAD`.
+- Add each new project you work in: `dfr $ID project:add [PATH]`.
 - After every edit log the work in `work-log.md` using append: `dfr $ID write:append work-log.md`.
 
 ## More commands

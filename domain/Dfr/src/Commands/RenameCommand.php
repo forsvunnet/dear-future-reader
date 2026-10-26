@@ -39,6 +39,7 @@ class RenameCommand extends Command
                 name: $name,
                 parent: $current->parent,
                 repository: $current->repository,
+                projects: $current->projects,
                 commits: $current->commits,
                 files: $current->files,
             ));

@@ -22,6 +22,7 @@ class SaveThing
             'name' => $thing->name,
             'parent' => $thing->parent,
             'repository' => $thing->repository,
+            'projects' => $thing->projects,
             'commits' => $thing->commits,
             'files' => $thing->files,
         ]);

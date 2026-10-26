@@ -21,6 +21,8 @@ use Domain\Dfr\Commands\ListCommand;
 use Domain\Dfr\Commands\LogCommand;
 use Domain\Dfr\Commands\ParentCommand;
 use Domain\Dfr\Commands\ParentRemoveCommand;
+use Domain\Dfr\Commands\ProjectAddCommand;
+use Domain\Dfr\Commands\ProjectRemoveCommand;
 use Domain\Dfr\Commands\ReadAllCommand;
 use Domain\Dfr\Commands\ReadCommand;
 use Domain\Dfr\Commands\RenameCommand;
@@ -81,6 +83,8 @@ class DfrServiceProvider extends ServiceProvider
             LogCommand::class,
             GitAddCommand::class,
             GitRemoveCommand::class,
+            ProjectAddCommand::class,
+            ProjectRemoveCommand::class,
             FilesCommand::class,
             FilesReorderCommand::class,
             FilesArchiveCommand::class,

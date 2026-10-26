@@ -31,6 +31,7 @@ class ParentRemoveCommand extends Command
                 name: $current->name,
                 parent: null,
                 repository: $current->repository,
+                projects: $current->projects,
                 commits: $current->commits,
                 files: $current->files,
             ));

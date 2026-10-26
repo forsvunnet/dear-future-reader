@@ -55,6 +55,7 @@ class ReadThing
             name: $data['name'],
             parent: is_string($parent) ? $parent : null,
             repository: is_string($repository) ? $repository : null,
+            projects: array_values(array_filter((array) ($data['projects'] ?? []), is_string(...))),
             commits: $commits,
             files: array_values(array_filter($data['files'], is_string(...))),
         );
