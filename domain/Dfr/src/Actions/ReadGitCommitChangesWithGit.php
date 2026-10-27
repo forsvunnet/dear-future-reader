@@ -19,6 +19,11 @@ class ReadGitCommitChangesWithGit implements ReadGitCommitChanges
 {
     public function __invoke(GitCommit $commit): array
     {
+        // The folder is gone when, for example, someone removed the worktree of the commit.
+        if (! is_dir($commit->repository)) {
+            return [];
+        }
+
         // A merge commit shows the changes against its first parent, like a normal commit.
         // Changes to whitespace are ignored. A file with only such changes is left out of both outputs.
         $options = ['show', '--format=', '--no-color', '--find-renames', '--diff-merges=first-parent', '--ignore-all-space'];

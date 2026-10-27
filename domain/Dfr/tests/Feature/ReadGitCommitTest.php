@@ -61,6 +61,13 @@ it('reads nothing for a commit that the repository does not have', function () {
         ->and((new ReadGitCommitChangesWithGit)($commit))->toBe([]);
 });
 
+it('reads nothing when the repository folder is gone', function () {
+    $commit = new GitCommit(str_repeat('a', 40), $this->makeRepository().'/gone');
+
+    expect((new ReadGitCommitHeaderWithGit)($commit))->toBeNull()
+        ->and((new ReadGitCommitChangesWithGit)($commit))->toBe([]);
+});
+
 it('ignores changes to whitespace', function () {
     $repository = $this->makeRepository();
     file_put_contents("$repository/indent.php", "if (true) {\necho 1;\n}\n");

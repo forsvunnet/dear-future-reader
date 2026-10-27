@@ -16,6 +16,11 @@ class ReadGitCommitHeaderWithGit implements ReadGitCommitHeader
 {
     public function __invoke(GitCommit $commit): ?GitCommitHeader
     {
+        // The folder is gone when, for example, someone removed the worktree of the commit.
+        if (! is_dir($commit->repository)) {
+            return null;
+        }
+
         // %x00 separates the fields, because a message can hold any other character.
         $process = new Process(['git', 'show', '--no-patch', '--no-color', '--format=%an%x00%cI%x00%s%x00%b', '--end-of-options', $commit->hash], $commit->repository);
         $process->run();
