@@ -9,6 +9,7 @@ use Domain\Dfr\Actions\OrderedFiles;
 use Domain\Dfr\Actions\ParseTodoLists;
 use Domain\Dfr\Actions\ReadThing;
 use Domain\Dfr\Actions\RenderBody;
+use Domain\Dfr\Actions\RenderCsv;
 use Domain\Dfr\Actions\SaveFileIfUnchanged;
 use Domain\Dfr\Actions\SplitFrontmatter;
 use Domain\Dfr\Actions\ThingProjects;
@@ -67,6 +68,8 @@ class ThingPage extends Component
 
     private RenderBody $renderBody;
 
+    private RenderCsv $renderCsv;
+
     private ToggleTodoItem $toggleTodoItem;
 
     private ThingProjects $thingProjects;
@@ -84,6 +87,7 @@ class ThingPage extends Component
         AppendLog $appendLog,
         ParseTodoLists $parseTodoLists,
         RenderBody $renderBody,
+        RenderCsv $renderCsv,
         ToggleTodoItem $toggleTodoItem,
         ThingProjects $thingProjects,
         ReadGitCommitHeader $readGitCommitHeader,
@@ -96,6 +100,7 @@ class ThingPage extends Component
         $this->appendLog = $appendLog;
         $this->parseTodoLists = $parseTodoLists;
         $this->renderBody = $renderBody;
+        $this->renderCsv = $renderCsv;
         $this->toggleTodoItem = $toggleTodoItem;
         $this->thingProjects = $thingProjects;
         $this->readGitCommitHeader = $readGitCommitHeader;
@@ -209,6 +214,12 @@ class ThingPage extends Component
         foreach (($this->orderedFiles)($thing) as $fileName) {
             $content = (string) file_get_contents("$thing->folder/$fileName");
             $documents[$fileName] = ($this->splitFrontmatter)($content);
+
+            if (str_ends_with($fileName, '.csv')) {
+                $bodies[$fileName] = ($this->renderCsv)($content);
+
+                continue;
+            }
 
             $items = array_merge(...array_map(fn (TodoList $list) => $list->items, ($this->parseTodoLists)($fileName, $content)));
             $bodies[$fileName] = ($this->renderBody)($fileName, $content, $items);

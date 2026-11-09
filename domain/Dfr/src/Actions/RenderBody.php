@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Domain\Dfr\Actions;
 
 use Domain\Dfr\Data\TodoItem;
+use Domain\Dfr\Markdown\CopyableTableRenderer;
 use Domain\Dfr\Markdown\HighlightedCodeRenderer;
+use Domain\Dfr\Markdown\TableCells;
 use Domain\Dfr\Markdown\TickableCheckboxRenderer;
 use Domain\Dfr\Markdown\TodoItemLabelRenderer;
 use League\CommonMark\Environment\Environment;
@@ -13,6 +15,8 @@ use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\CommonMark\Renderer\Block\FencedCodeRenderer;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\Extension\Table\Table;
+use League\CommonMark\Extension\Table\TableRenderer;
 use League\CommonMark\Extension\TaskList\TaskListItemMarker;
 use League\CommonMark\MarkdownConverter;
 use League\CommonMark\Node\Block\Paragraph;
@@ -27,6 +31,9 @@ class RenderBody
     public function __construct(
         private SplitFrontmatter $splitFrontmatter,
         private BodyFirstLine $bodyFirstLine,
+        private TableCells $tableCells,
+        private TableToCsv $tableToCsv,
+        private TableToTsv $tableToTsv,
     ) {}
 
     /**
@@ -34,6 +41,7 @@ class RenderBody
      */
     public function __invoke(string $fileName, string $content, array $items): string
     {
+        $body = ($this->splitFrontmatter)($content)->body;
         $environment = new Environment(['html_input' => 'escape', 'allow_unsafe_links' => false]);
         $environment->addExtension(new CommonMarkCoreExtension);
         $environment->addExtension(new GithubFlavoredMarkdownExtension);
@@ -46,7 +54,8 @@ class RenderBody
         ), 10);
         $environment->addRenderer(Paragraph::class, new TodoItemLabelRenderer(new ParagraphRenderer), 10);
         $environment->addRenderer(FencedCode::class, new HighlightedCodeRenderer(new FencedCodeRenderer), 10);
+        $environment->addRenderer(Table::class, new CopyableTableRenderer(new TableRenderer, $this->tableCells, $this->tableToCsv, $this->tableToTsv, $body), 10);
 
-        return (string) (new MarkdownConverter($environment))->convert(($this->splitFrontmatter)($content)->body);
+        return (string) (new MarkdownConverter($environment))->convert($body);
     }
 }

@@ -1,7 +1,7 @@
 {{-- On a narrow screen the commits are below the files. --}}
 <div class="md:flex">
     <div class="min-w-0 flex-1 px-4 py-6">
-        <div class="max-w-4xl">
+        <div>
             <h1 class="dfr-title">{{ $thing->name }}</h1>
 
             <dl class="mt-2 mb-6 grid grid-cols-[auto_1fr] gap-x-4">

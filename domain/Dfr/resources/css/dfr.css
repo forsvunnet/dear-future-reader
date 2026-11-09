@@ -276,7 +276,25 @@ section.dfr-panel {
     border-color: var(--dfr-line);
 }
 
+/* Text keeps a line length that is easy to read. A table uses the full width. */
+.dfr-markdown > :not(.dfr-table) {
+    max-width: 100ch;
+}
+
+/* The buttons that copy a table, above the table. */
+.dfr-table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1ch;
+    margin-bottom: 0.5em;
+}
+
+/* A table that is wider than the page scrolls sideways. Its cells do not wrap. */
 .dfr-markdown table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
     border-collapse: collapse;
 }
 
