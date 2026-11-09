@@ -26,10 +26,6 @@ class RenderCsv
             return '';
         }
 
-        $cells = fn (array $row, string $tag) => new HtmlElement('tr', [], array_map(
-            fn (string $cell) => new HtmlElement($tag, [], e($cell)),
-            $row,
-        ));
         $buttons = array_map(
             fn (string $format) => new HtmlElement('button', [
                 'type' => 'button',
@@ -51,10 +47,18 @@ class RenderCsv
                 new HtmlElement('span', ['role' => 'status', 'class' => 'dfr-muted', 'x-text' => 'message'], ''),
             ]),
             new HtmlElement('table', [], [
-                new HtmlElement('thead', [], $cells($rows[0], 'th')),
-                new HtmlElement('tbody', [], array_map(fn (array $row) => $cells($row, 'td'), array_slice($rows, 1))),
+                new HtmlElement('thead', [], $this->row($rows[0], 'th')),
+                new HtmlElement('tbody', [], array_map(fn (array $row) => $this->row($row, 'td'), array_slice($rows, 1))),
             ]),
         ]);
+    }
+
+    /**
+     * @param  list<string>  $cells
+     */
+    public function row(array $cells, string $tag): HtmlElement
+    {
+        return new HtmlElement('tr', [], array_map(fn (string $cell) => new HtmlElement($tag, [], e($cell)), $cells));
     }
 
     /**
