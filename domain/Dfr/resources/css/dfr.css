@@ -66,6 +66,13 @@
     line-height: inherit;
 }
 
+/* A thin scrollbar in the line colour, on a clear track. */
+.dfr-body,
+.dfr-body * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--dfr-line) transparent;
+}
+
 .dfr-body :focus-visible {
     outline: 1px solid var(--dfr-focus);
     outline-offset: 2px;
