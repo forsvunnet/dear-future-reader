@@ -15,6 +15,8 @@
 :root {
     --dfr-bg: oklch(98.5% 0 0);
     --dfr-text: oklch(25% 0 0);
+    /* The body text of a context file. It is dimmer than --dfr-text and brighter than --dfr-muted. */
+    --dfr-dim: oklch(40% 0 0);
     --dfr-muted: oklch(50% 0 0);
     --dfr-line: oklch(87% 0 0);
     --dfr-focus: oklch(55% 0.17 250);
@@ -36,6 +38,7 @@
     :root {
         --dfr-bg: #121212;
         --dfr-text: #E9E9E9;
+        --dfr-dim: #C4C4C4;
         --dfr-muted: #9F9F9F;
         --dfr-line: #333333;
         --dfr-focus: #4EA8F0;
@@ -221,27 +224,22 @@ section.dfr-panel {
 }
 
 /*
-  A context file rendered from Markdown. All headings have the one size, so
-  a muted mark before each heading shows its level.
+  A context file rendered from Markdown. All headings have the one size.
+  The body text is dim. Headings and strong text are brighter.
+  Against the background, dim text has a contrast of 8.8:1 in light mode and
+  10.7:1 in dark mode. The strict WCAG level asks for 7:1.
 */
+.dfr-markdown {
+    color: var(--dfr-dim);
+}
+
 .dfr-markdown > * + * {
     margin-top: calc(var(--dfr-leading) * 1em);
 }
 
-.dfr-markdown :is(h1, h2, h3, h4, h5, h6) {
-    text-transform: uppercase;
+.dfr-markdown :is(h1, h2, h3, h4, h5, h6, strong) {
+    color: var(--dfr-text);
 }
-
-.dfr-markdown :is(h1, h2, h3, h4, h5, h6)::before {
-    color: var(--dfr-muted);
-}
-
-.dfr-markdown h1::before { content: "# "; }
-.dfr-markdown h2::before { content: "## "; }
-.dfr-markdown h3::before { content: "### "; }
-.dfr-markdown h4::before { content: "#### "; }
-.dfr-markdown h5::before { content: "##### "; }
-.dfr-markdown h6::before { content: "###### "; }
 
 .dfr-markdown :is(ul, ol) {
     padding-left: 2ch;
