@@ -12,11 +12,11 @@ Examples:
 
 Each change has a before state, an after state, a blast radius and a requirement.
 
-## Change and question
+## Change and inquiry
 
-A question is work that gives knowledge. Research and an investigation are questions. A question changes nothing, so it has no blast radius and no after state to verify.
+An inquiry is work that gives knowledge. Research and an investigation are inquiries. An inquiry changes nothing, so it has no blast radius and no after state to verify.
 
-A question goes through align, research and answer.
+An inquiry goes through align, research and answer.
 
 An investigation can end in a change. Then the work continues as a change at the plan step. The research is already done.
 

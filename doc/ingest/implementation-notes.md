@@ -70,7 +70,7 @@ A point that passes both checks can be handled automatically. Other points go to
 
 Today the user drives each piece of work by hand:
 
-1. The user asks a question.
+1. The user says what they want.
 2. The agent outlines what it understood. The user confirms.
 3. The agent makes a plan and finds what the change can affect. The user confirms.
 4. The agent builds it.
