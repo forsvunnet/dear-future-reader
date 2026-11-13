@@ -2,7 +2,7 @@
   Colors code with Shiki in the browser.
 
   An element with the x-highlight directive holds plain, escaped code from the server:
-  - data-lang: the language of a code block in a context file.
+  - data-lang: the language of a code block in a context file. A mermaid block becomes a diagram.
   - data-diff: the element holds a unified diff of the file in data-file.
 
   The server marks each element with wire:ignore and a wire:key from its content.
@@ -75,9 +75,48 @@ function hunkToHtml(hunk, lang) {
     }]);
 }
 
+// Mermaid is large. Vite puts it in its own file, and the page loads it only for the first diagram.
+let mermaid;
+let diagramCount = 0;
+
+// Draws a mermaid block as a diagram. When Mermaid cannot read the block, it shows the error and the code.
+// ponytail: the theme follows the color scheme when the block is drawn. A later change of the scheme needs a reload.
+async function mermaidToHtml(code) {
+    mermaid ??= import('mermaid').then(({ default: library }) => {
+        library.initialize({
+            startOnLoad: false,
+            securityLevel: 'strict',
+            suppressErrorRendering: true,
+            theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'neutral',
+            fontFamily: getComputedStyle(document.body).fontFamily,
+        });
+
+        return library;
+    });
+
+    try {
+        const { svg } = await (await mermaid).render(`dfr-mermaid-${++diagramCount}`, code);
+
+        return svg;
+    } catch (error) {
+        const message = document.createElement('p');
+        message.className = 'dfr-danger';
+        message.textContent = `Mermaid cannot draw this block: ${error.message}`;
+
+        return message.outerHTML + await codeToHtml(code, 'text');
+    }
+}
+
 async function highlight(el) {
     const code = el.textContent.replace(/\n$/, '');
-    el.innerHTML = 'diff' in el.dataset ? await diffToHtml(code, el.dataset.file) : await codeToHtml(code, el.dataset.lang);
+
+    if ('diff' in el.dataset) {
+        el.innerHTML = await diffToHtml(code, el.dataset.file);
+    } else if (el.dataset.lang === 'mermaid') {
+        el.innerHTML = await mermaidToHtml(code);
+    } else {
+        el.innerHTML = await codeToHtml(code, el.dataset.lang);
+    }
 }
 
 document.addEventListener('alpine:init', () => {
