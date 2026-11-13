@@ -17,7 +17,7 @@ case "${1:-}" in
     -*)
         exec php "$artisan" "$@"
         ;;
-    init | list | search)
+    init | list | search | hook:*)
         command="$1"
         shift
         exec php "$artisan" "dfr:$command" "$@"

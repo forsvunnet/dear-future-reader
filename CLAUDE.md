@@ -34,3 +34,4 @@ After the report, update "Current status" below.
 - Phase 6 is done. The Web UI is in the Dfr domain. Start it with `php artisan serve`.
 - All phases are done.
 - Each thing shows its projects: the git repository where `init` ran, the repositories from `project:add` and the repositories of its commits. See `ThingProjects`.
+- The opt-in Claude Code hooks are the `dfr hook:*` commands. The README section "Hooks (opt-in)" shows how to add them.

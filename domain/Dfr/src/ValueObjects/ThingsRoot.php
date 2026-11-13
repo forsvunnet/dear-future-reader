@@ -17,4 +17,12 @@ readonly class ThingsRoot
     {
         return "$this->path/$id";
     }
+
+    /**
+     * The file where the hooks keep what they know about a Claude Code session.
+     */
+    public function sessionFile(string $session): string
+    {
+        return "$this->path/.sessions/$session.json";
+    }
 }

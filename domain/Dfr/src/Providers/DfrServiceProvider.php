@@ -16,6 +16,9 @@ use Domain\Dfr\Commands\FmAddCommand;
 use Domain\Dfr\Commands\FmCommand;
 use Domain\Dfr\Commands\GitAddCommand;
 use Domain\Dfr\Commands\GitRemoveCommand;
+use Domain\Dfr\Commands\HookEditCommand;
+use Domain\Dfr\Commands\HookPromptCommand;
+use Domain\Dfr\Commands\HookStopCommand;
 use Domain\Dfr\Commands\InitCommand;
 use Domain\Dfr\Commands\ListCommand;
 use Domain\Dfr\Commands\LogCommand;
@@ -88,6 +91,9 @@ class DfrServiceProvider extends ServiceProvider
             FilesCommand::class,
             FilesReorderCommand::class,
             FilesArchiveCommand::class,
+            HookPromptCommand::class,
+            HookEditCommand::class,
+            HookStopCommand::class,
         ]);
 
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'dfr');

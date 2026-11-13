@@ -1,6 +1,6 @@
 ---
 name: dfr
-description: Keep the context of a task in shared files with the `dfr` CLI, so that a later session can continue the work. Use when the user says dfr or "dear future reader", gives a dfr thing ID, or asks to make work that continues over many sessions.
+description: Keep the context of a task in shared files with the `dfr` CLI, so that a later session can continue the work. Use when the user says dfr or "dear future reader", gives a dfr thing ID, when a hook names the dfr thing of the session, or asks to make work that continues over many sessions.
 ---
 
 # Dear Future Reader
@@ -9,7 +9,20 @@ A thing is one piece of work, like a task, a feature or a bug fix. Each thing ha
 
 Write each file for a future reader who was not in this session. That reader can be you after the session limit.
 
+## Keep the thing updated
+
+A session can stop at any time. A change that is not in the thing is lost for the next session. After each change, before you go on:
+
+1. Append what you did and the next step to `work-log.md`: `dfr $ID write:append work-log.md`.
+2. Tick the todo items that are done.
+3. Write each new decision and its reason in `plan.md`.
+4. Connect each new commit: `dfr $ID git:add HEAD`.
+
+Do not wait for the end of the task.
+
 ## Start
+
+A hook can name the thing of the session, in a line that starts with "dfr:". Use that thing. If the hook made the thing, read the prompt, then give the thing a short name: `dfr $ID rename "short name"`.
 
 When the user gives an ID, continue that thing:
 
@@ -21,7 +34,7 @@ Read all of the output before you do other work. Then continue from the next ste
 
 The first line of the output can name the projects of the thing. A project is the folder of a git repository. Work in those folders.
 
-When the user gives no ID, make a new thing:
+When the user gives no ID and no hook names a thing, make a new thing:
 
 ```shell
 dfr init "short name of the task"
@@ -74,14 +87,11 @@ EOF
 
 ## While you work
 
-A session can stop at any time. Write to the files as you go. Do not wait for the end of the session.
+Follow "Keep the thing updated" after each change. Also:
 
-- Tick each todo item when it is done: `dfr $ID todo tick "item"`.
+- Tick a todo item with `dfr $ID todo tick "item"`.
 - Add a step when you find one: `dfr $ID todo add "item"`.
-- Write each decision in `plan.md` when you make it.
-- Connect each commit you make: `dfr $ID git:add HEAD`.
 - Add each new project you work in: `dfr $ID project:add [PATH]`.
-- After every edit log the work in `work-log.md` using append: `dfr $ID write:append work-log.md`.
 
 ## More commands
 

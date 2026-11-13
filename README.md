@@ -175,6 +175,28 @@ ln -s "$PWD/skills/dfr" ~/.claude/skills/dfr
 
 The `dfr` skill makes a new thing when you give no ID. When you give an ID, it reads the context files of that thing and continues the work.
 
+## Hooks (opt-in)
+
+Claude Code hooks can connect each session to a thing, and make the agent keep the thing updated. The hooks are off until you add them to `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "dfr hook:prompt" }] }],
+    "PostToolUse": [{ "matcher": "Edit|Write|NotebookEdit", "hooks": [{ "type": "command", "command": "dfr hook:edit" }] }],
+    "Stop": [{ "hooks": [{ "type": "command", "command": "dfr hook:stop" }] }]
+  }
+}
+```
+
+- `hook:prompt` makes a thing on the first prompt of a session, in the current folder, with the name "unnamed". The agent renames it. When a prompt starts with `dfr ID`, the session connects to that thing instead. On each prompt, the hook reminds the agent to keep the thing updated.
+- `hook:edit` stores the time of each file edit.
+- `hook:stop` blocks the end of a turn when the session edited files after its last change to the thing. The agent then updates the thing. It blocks only once in a row.
+
+The hooks keep one file for each session in the `.sessions` folder of the things folder.
+
+Edits through Bash, like `sed`, do not reach `hook:edit`, so the stop hook does not see them.
+
 ## Web UI
 
 Start the Web UI:
