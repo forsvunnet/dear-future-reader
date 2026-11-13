@@ -79,6 +79,6 @@ class HookPromptCommand extends Command
     public function reminder(string $id): string
     {
         return "dfr: this session works on the thing $id. Use the dfr skill. "
-            ."After each change, update the thing: append to work-log.md, tick the todo items, write decisions in plan.md.";
+            ."After each piece of work, update the thing: append to work-log.md, tick the todo items, write decisions in plan.md.";
     }
 }
