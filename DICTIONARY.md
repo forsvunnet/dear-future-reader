@@ -9,3 +9,7 @@ The list of things that a change can affect. It is usually a list of files. It c
 ## Change
 
 Work that makes the state of something outside the conversation different. The thing can be a file, a server, a binary, a daemon or data. A new feature, a bug fix and a deleted file are each a change. A change goes through the steps align, research, plan, apply and verify. See [doc/change.md](doc/change.md).
+
+## Verify
+
+The last step of a change. Observe the outcome in a real situation, through the whole flow, before and after the change, in a few different cases. See [doc/change.md](doc/change.md).

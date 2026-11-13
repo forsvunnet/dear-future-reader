@@ -28,7 +28,15 @@ A change goes through five steps, in this order.
 2. **Research.** Find the current state of the things the change touches.
 3. **Plan.** Write the steps of the change. Name the blast radius.
 4. **Apply.** Do the steps of the plan.
-5. **Verify.** Check that the after state meets the requirement. A test is one way to verify.
+5. **Verify.** Observe the outcome in a real situation, and compare the before state with the after state.
+
+## Verify
+
+To verify is to observe the outcome of a change in a real situation.
+
+Go through the whole flow to the place where the outcome shows. Do it before and after the change, and compare.
+
+Use a few different cases.
 
 ## Blast radius
 
