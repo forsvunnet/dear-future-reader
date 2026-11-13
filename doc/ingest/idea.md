@@ -27,7 +27,7 @@ Each piece of work can be followed back to the exact words where it started.
 7. **Ask about gaps.** When context is missing, the user gets a question. The answer is saved as a new source.
 8. **Find the real need.** A request is checked for the need behind it before work starts.
 9. **Few questions.** The user gets a short list at one time of day. The list must not become noise.
-10. **Verify against the input.** Each change is verified as in [change.md](../change.md). The input gives the before state, and the outcome gives the after state. The user puts the two side by side and sees if the problem is solved.
+10. **Verify against the input.** Each change is verified as in [change.md](../../skills/dfr/change.md). The input gives the before state, and the outcome gives the after state. The user puts the two side by side and sees if the problem is solved.
 11. **Show what matters.** The outcome separates important and risky changes from trivial ones.
 12. **Work without the user.** Clear points go from the pile to finished work without the user.
 13. **Safe merges only.** A change is merged without the user only when it is completely safe.

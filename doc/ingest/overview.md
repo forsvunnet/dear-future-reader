@@ -20,7 +20,7 @@ The user is asked only about what is truly unclear. Everything that is clear and
 
 Automate the path from input to outcome, so that the user can easily verify the outcome without the noise.
 
-The user puts the input next to the outcome and sees if the work solved the problem. This is the verify step of a change, as in [change.md](../change.md). The input gives the before state, and the outcome gives the after state. To make this possible:
+The user puts the input next to the outcome and sees if the work solved the problem. This is the verify step of a change, as in [change.md](../../skills/dfr/change.md). The input gives the before state, and the outcome gives the after state. To make this possible:
 
 - **Provenance.** Each piece of work can be followed back to the exact words where it started, and to each later turn.
 - **Focus on what matters.** The outcome shows the important and risky changes first. Trivial changes stay out of the way.

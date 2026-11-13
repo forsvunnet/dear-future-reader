@@ -11,7 +11,7 @@ Write each file for a future reader who was not in this session. That reader can
 
 ## Keep the thing updated
 
-A session can stop at any time. A change that is not in the thing is lost for the next session. After each change, before you go on:
+A session can stop at any time. Work that is not in the thing is lost for the next session. After each piece of work, before you go on:
 
 1. Append what you did and the next step to `work-log.md`: `dfr $ID write:append work-log.md`.
 2. Tick the todo items that are done.
@@ -50,6 +50,19 @@ Use `dfr list` and `dfr search [TEXT]` only when the user asks you to find a thi
 
 Shell variables do not stay between Bash calls. Write the ID itself in each command.
 
+## Change and inquiry
+
+A change makes the state of something outside the conversation different. An inquiry gives knowledge and changes nothing. Read [change.md](change.md) for the full model.
+
+A change goes through align, research, plan, apply and verify. An inquiry goes through align, research and answer. Write the result of each step in the thing:
+
+- Align: the requirement that verify can check, in `goal.md`. For an inquiry, the question in `question.md`.
+- Research: the current state in `files.md`, `facts.md` or `current-behaviour.md`. Write the before state in `verify.md`.
+- Plan: `plan.md`, the steps in `todo.md` and the blast radius in `blast-radius.md`.
+- Apply: each edited file in `edited-files.md`.
+- Verify: the after state in `verify.md`, next to the before state.
+- Answer: `findings.md`.
+
 ## Files
 
 Keep files short, focused and concise. New information and new work may change the direction of the work, and the files may need complete rewrites. Keeping them short makes this easier to manage.
@@ -72,7 +85,7 @@ More files for each kind of work. Use them when the work is of that kind:
 - Investigation: `question.md` for the question to answer, `facts.md` for what is known, `findings.md` for what the work finds.
 - Bug fix: `symptom.md` for what goes wrong, `reproduce.md` for the exact steps, `root-cause.md` for the cause.
 - Change of behaviour: `current-behaviour.md` and `wanted-behaviour.md`.
-- Code change: `blast-radius.md` for the code and behaviour that the change can affect, `verify.md` for the steps that prove the change works.
+- Code change: `blast-radius.md` for the things that the change can affect, `verify.md` for the before state, the after state and how you observed them.
 
 Write the content through a pipe with a heredoc:
 
