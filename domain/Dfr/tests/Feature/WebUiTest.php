@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Domain\Dfr\Livewire\ThingList;
 use Domain\Dfr\Livewire\ThingPage;
 use Domain\Dfr\ValueObjects\ThingsRoot;
 use Illuminate\Foundation\Console\ServeCommand;
@@ -22,7 +23,7 @@ it('lists the things with each child under its parent', function () {
     $child = $this->init('Child thing');
     $this->dfr([$child, 'parent', $parent]);
 
-    $this->get('/')
+    $this->withSession(['dfr.project' => null])->get('/')
         ->assertOk()
         ->assertSeeInOrder(['Parent thing', 'Child thing'])
         ->assertSee('padding-left: calc(1rem + 2ch)', false)
@@ -224,17 +225,48 @@ it('shows the things in the sidebar, the most recently active first', function (
     $setTime($child, time() - 120);
 
     // The parent goes first, because its child is the most recently active thing.
-    $this->get("/things/$middle")
+    $this->withSession(['dfr.project' => null])->get("/things/$middle")
         ->assertOk()
         ->assertSeeInOrder(['Old parent', '3 days ago', 'Active child', '2 minutes ago', 'Middle thing', '2 days ago'])
         ->assertSee('aria-current="page"', false);
+});
+
+it('shows all projects and then the projects in the sidebar, the most recently active first', function () {
+    $shop = $this->makeRepository('shop');
+    $blog = $this->makeRepository('blog');
+    $old = trim($this->dfr(['init', 'Old shop thing'], folder: $shop)->getOutput());
+    $new = trim($this->dfr(['init', 'New blog thing'], folder: $blog)->getOutput());
+    touch($this->thingFolder($old).'/.log.jsonl', time() - 86400);
+    touch($this->thingFolder($new).'/.log.jsonl', time() - 60);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSeeInOrder(['All projects', 'blog', 'shop'])
+        ->assertDontSee('Old shop thing');
+});
+
+it('shows only the things of the selected project, and goes back to the projects', function () {
+    $shop = $this->makeRepository('shop');
+    $blog = $this->makeRepository('blog');
+    $this->dfr(['init', 'Shop thing'], folder: $shop);
+    $this->dfr(['init', 'Blog thing'], folder: $blog);
+
+    Livewire::test(ThingList::class)
+        ->call('selectProject', realpath($shop))
+        ->assertSee('Shop thing')
+        ->assertDontSee('Blog thing')
+        ->call('selectProject', null)
+        ->assertSee(['Shop thing', 'Blog thing'])
+        ->call('showProjects')
+        ->assertSee('All projects')
+        ->assertDontSee('Shop thing');
 });
 
 it('shows the projects of a thing', function () {
     $repository = $this->makeRepository('shop');
     $id = trim($this->dfr(['init', 'test'], folder: $repository)->getOutput());
 
-    $this->get("/things/$id")
+    $this->withSession(['dfr.project' => null])->get("/things/$id")
         ->assertOk()
         ->assertSeeInOrder(['Projects', realpath($repository)])
         ->assertSeeInOrder(["/things/$id", 'shop'], false);
