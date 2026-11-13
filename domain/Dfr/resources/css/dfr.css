@@ -107,6 +107,11 @@
     border-left-color: var(--dfr-fill);
 }
 
+/* The file or files that changed last have a line on the left, like the current thing in the sidebar. */
+.dfr-body .dfr-changed-last {
+    border-left: 2px solid var(--dfr-fill);
+}
+
 /* The panel of a commit. It slides in from the right over the page. */
 .dfr-panel {
     background-color: var(--dfr-bg);

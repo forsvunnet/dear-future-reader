@@ -41,6 +41,24 @@ it('shows the files of a thing in their order', function () {
         ->assertSeeInOrder(['todo.md', 'First step', 'plan.md', 'owner: web', '<h1>The plan</h1>'], false);
 });
 
+it('shows when each file changed and marks the files that changed last', function () {
+    $id = $this->init();
+    $this->dfr([$id, 'write', 'old.md'], "Old\n");
+    $this->dfr([$id, 'write', 'new.md'], "New\n");
+    $this->dfr([$id, 'write', 'same.md'], "Same\n");
+    touch("$this->home/.dfr/$id/old.md", 1_700_000_000);
+    touch("$this->home/.dfr/$id/new.md", 1_700_000_100);
+    touch("$this->home/.dfr/$id/same.md", 1_700_000_100);
+
+    $html = Livewire::test(ThingPage::class, ['id' => $id])->html();
+
+    expect($html)->toContain('wire:poll')
+        ->toContain('datetime="2023-11-14T22:13:20+00:00"')
+        ->toContain('datetime="2023-11-14T22:15:00+00:00"')
+        ->and(substr_count($html, 'Changed last'))->toBe(2)
+        ->and(str($html)->betweenFirst('old.md', 'new.md')->toString())->not->toContain('Changed last');
+});
+
 it('shows how many todo items of a file are ticked', function () {
     $id = $this->init();
     $this->dfr([$id, 'write', 'todo.md'], "- [x] First\n- [ ] Second\n- [x] Third\n");

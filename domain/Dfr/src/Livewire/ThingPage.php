@@ -210,8 +210,10 @@ class ThingPage extends Component
         $documents = [];
         $bodies = [];
         $progress = [];
+        $times = [];
 
         foreach (($this->orderedFiles)($thing) as $fileName) {
+            $times[$fileName] = filemtime("$thing->folder/$fileName") ?: 0;
             $content = (string) file_get_contents("$thing->folder/$fileName");
             $documents[$fileName] = ($this->splitFrontmatter)($content);
 
@@ -241,6 +243,9 @@ class ThingPage extends Component
             'documents' => $documents,
             'bodies' => $bodies,
             'progress' => $progress,
+            'times' => $times,
+            // Files that changed in the same second as the newest file all count as changed last.
+            'lastTime' => max([0, ...$times]),
             'commits' => $commits,
             'headers' => array_map(fn (GitCommit $commit) => ($this->readGitCommitHeader)($commit), $commits),
             'openHeader' => $openCommit === null ? null : ($this->readGitCommitHeader)($openCommit),

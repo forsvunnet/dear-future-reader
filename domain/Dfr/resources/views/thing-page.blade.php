@@ -1,5 +1,6 @@
-{{-- On a narrow screen the commits are below the files. --}}
-<div class="md:flex">
+{{-- On a narrow screen the commits are below the files. The poll shows the changes that sessions make to the files. --}}
+{{-- ponytail: each poll runs one git process for each commit. See the comment in ThingPage::render() when the page gets slow. --}}
+<div class="md:flex" wire:poll>
     <div class="min-w-0 flex-1 px-4 py-6">
         <div>
             <h1 class="dfr-title">{{ $thing->name }}</h1>
@@ -42,12 +43,17 @@
             @endif
 
             @foreach ($documents as $fileName => $document)
-                <section wire:key="{{ $fileName }}" class="dfr-line mb-6 border">
+                @php($time = \Illuminate\Support\Carbon::createFromTimestamp($times[$fileName]))
+                <section wire:key="{{ $fileName }}" @class(['dfr-line mb-6 border', 'dfr-changed-last' => $times[$fileName] === $lastTime])>
                     <header class="dfr-line flex items-center justify-between border-b px-4 py-2">
                         <h2>
                             {{ $fileName }}
                             @if (isset($progress[$fileName]))
                                 <span class="dfr-muted" title="Ticked todo items">{{ $progress[$fileName] }}</span>
+                            @endif
+                            <time class="dfr-muted" datetime="{{ $time->toIso8601String() }}" title="{{ $time->toIso8601String() }}">{{ $time->diffForHumans() }}</time>
+                            @if ($times[$fileName] === $lastTime)
+                                <span class="sr-only">Changed last</span>
                             @endif
                         </h2>
                         @if ($editing !== $fileName)
