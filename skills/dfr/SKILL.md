@@ -20,6 +20,20 @@ A session can stop at any time. Work that is not in the thing is lost for the ne
 
 Do not wait for the end of the task.
 
+## Tidy
+
+Each session reads all the files of the thing. Text that is no longer true misleads that session. Text that is no longer useful costs it time.
+
+Tidy at the end of each step of a change or an inquiry, and when you find that a file is wrong. Rewrite each file so it holds only what is still true and useful:
+
+- `plan.md`: remove the options you dropped and the parts of the plan that changed. Keep each decision and its reason.
+- `facts.md`, `files.md`, `current-behaviour.md`: remove each line that is no longer true.
+- `work-log.md`: when it is longer than about 50 lines, replace the old sessions with a short summary. Keep the last session in full.
+- `todo.md`: keep the ticked items. The Web UI counts them for the progress.
+- A file that no longer has a purpose: archive it.
+
+Archive a file before a big rewrite: `dfr $ID files:archive FILE`, then `dfr $ID write FILE`. A rewrite is big when it removes whole sections or changes the direction of the work. The archive keeps the old version, because nothing else keeps it. `read:all` and `search` skip archived files. For a small cut, use `write` with no archive.
+
 ## Start
 
 A hook can name the thing of the session, in a line that starts with "dfr:". Use that thing. If the hook made the thing, read the prompt, then give the thing a short name: `dfr $ID rename "short name"`.
@@ -113,7 +127,7 @@ Run `dfr` with no arguments to see all commands. The main ones:
 ```shell
 dfr $ID read [FILENAME]               # Show one file.
 dfr $ID files                         # List the files.
-dfr $ID files:archive [FILENAME...]   # Archive files that are no longer correct.
+dfr $ID files:archive [FILENAME...]   # Archive files that are no longer correct, or before a big rewrite.
 dfr $ID todo next                     # Show the first item that is not ticked.
 dfr $ID log                           # Show which session ran which command, and when.
 dfr init "name" --parent [PARENT_ID]  # Make a child thing for a large part of the work.
