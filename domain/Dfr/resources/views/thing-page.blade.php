@@ -1,32 +1,37 @@
 {{-- On a narrow screen the commits are below the files. The poll shows the changes that sessions make to the files. --}}
 {{-- ponytail: each poll runs one git process for each commit. See the comment in ThingPage::render() when the page gets slow. --}}
 <div class="md:flex" wire:poll>
-    <div class="min-w-0 flex-1 px-4 py-6">
-        <div>
-            <h1 class="dfr-title">{{ $thing->name }}</h1>
+    <div class="min-w-0 flex-1">
+        {{-- The copy button gives the text that a new session needs to continue the thing. --}}
+        <header class="dfr-column-header dfr-line">
+            <h1 class="dfr-title min-w-0 truncate" title="{{ $thing->name }}">{{ $thing->name }}</h1>
+            <span class="dfr-muted shrink-0">{{ $thing->id }}</span>
+            <button type="button" x-data x-on:click="copyText(@js('dfr ' . $thing->id))" class="dfr-button shrink-0">Copy</button>
+        </header>
 
-            <dl class="mt-2 mb-6 grid grid-cols-[auto_1fr] gap-x-4">
-                <dt class="dfr-label">ID</dt>
-                <dd>{{ $thing->id }}</dd>
-                @if ($thing->parent !== null)
-                    <dt class="dfr-label">Parent</dt>
-                    <dd>
-                        @if ($parent !== null)
-                            <a href="{{ route('dfr.thing', $parent->id) }}">{{ $parent->name }}</a>
-                        @else
-                            {{ $thing->parent }}
-                        @endif
-                    </dd>
-                @endif
-                @if ($projects !== [])
-                    <dt class="dfr-label">Projects</dt>
-                    <dd>
-                        @foreach ($projects as $project)
-                            <span class="block">{{ $project }}</span>
-                        @endforeach
-                    </dd>
-                @endif
-            </dl>
+        <div class="px-4 py-6">
+            @if ($thing->parent !== null || $projects !== [])
+                <dl class="mb-6 grid grid-cols-[auto_1fr] gap-x-4">
+                    @if ($thing->parent !== null)
+                        <dt class="dfr-label">Parent</dt>
+                        <dd>
+                            @if ($parent !== null)
+                                <a href="{{ route('dfr.thing', $parent->id) }}">{{ $parent->name }}</a>
+                            @else
+                                {{ $thing->parent }}
+                            @endif
+                        </dd>
+                    @endif
+                    @if ($projects !== [])
+                        <dt class="dfr-label">Projects</dt>
+                        <dd>
+                            @foreach ($projects as $project)
+                                <span class="block">{{ $project }}</span>
+                            @endforeach
+                        </dd>
+                    @endif
+                </dl>
+            @endif
 
             @if ($tickError !== null)
                 <p role="alert" class="dfr-danger mb-6">{{ $tickError }}</p>

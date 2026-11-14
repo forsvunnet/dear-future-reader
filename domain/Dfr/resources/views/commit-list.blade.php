@@ -1,6 +1,6 @@
 @if ($commits !== [])
     <aside class="dfr-line border-t md:sticky md:top-0 md:h-screen md:w-72 md:shrink-0 md:overflow-y-auto md:border-t-0 md:border-l">
-        <header class="dfr-line dfr-title border-b px-4 py-3">Commits</header>
+        <header class="dfr-column-header dfr-line dfr-title">Commits</header>
         <nav aria-label="Commits">
             <ul>
                 @foreach ($commits as $index => $commit)

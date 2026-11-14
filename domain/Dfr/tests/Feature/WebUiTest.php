@@ -41,6 +41,14 @@ it('shows the files of a thing in their order', function () {
         ->assertSeeInOrder(['todo.md', 'First step', 'plan.md', 'owner: web', '<h1>The plan</h1>'], false);
 });
 
+it('gives the thing page a button that copies the text to continue the thing', function () {
+    $id = $this->init();
+
+    $this->get("/things/$id")
+        ->assertOk()
+        ->assertSee("copyText('dfr $id')", false);
+});
+
 it('shows when each file changed and marks the files that changed last', function () {
     $id = $this->init();
     $this->dfr([$id, 'write', 'old.md'], "Old\n");

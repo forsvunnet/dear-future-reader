@@ -112,6 +112,68 @@
     border-left: 2px solid var(--dfr-fill);
 }
 
+/*
+  The header on top of a column: the sidebar, the page, the commits and the commit panel.
+  All headers have one height, so their bottom lines are in one row. Each header stays
+  on top while its column scrolls. A long title is cut, so the height does not change.
+*/
+.dfr-column-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 2ch;
+    height: 2.75rem;
+    padding: 0 1rem;
+    border-bottom-width: 1px;
+    background-color: var(--dfr-bg);
+}
+
+/* The toasts, in the bottom right corner. The newest toast is at the bottom. */
+.dfr-toaster {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 20rem;
+    max-width: calc(100vw - 2rem);
+}
+
+.dfr-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 1ch;
+    border: 1px solid var(--dfr-line);
+    border-left: 2px solid var(--dfr-fill);
+    background-color: var(--dfr-bg);
+    padding: 0.5rem 1ch;
+    animation: dfr-toast-in 200ms ease-out;
+}
+
+/* Set while the toast leaves. toaster.js removes the toast when the animation ends. */
+.dfr-toast-leaving {
+    animation: dfr-toast-out 200ms ease-in forwards;
+}
+
+@keyframes dfr-toast-in {
+    from { opacity: 0; transform: translateX(1rem); }
+}
+
+@keyframes dfr-toast-out {
+    to { opacity: 0; transform: translateX(1rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dfr-toast,
+    .dfr-toast-leaving {
+        animation: none;
+    }
+}
+
 /* The panel of a commit. It slides in from the right over the page. */
 .dfr-panel {
     background-color: var(--dfr-bg);

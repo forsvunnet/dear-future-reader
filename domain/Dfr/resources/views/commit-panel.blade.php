@@ -11,8 +11,8 @@
         x-on:keydown.escape.window="$wire.closeCommit()"
         class="dfr-panel dfr-line fixed inset-y-0 right-0 left-0 z-10 overflow-y-auto md:left-72 md:border-l"
     >
-        <header class="dfr-panel dfr-line sticky top-0 flex items-center justify-between gap-4 border-b px-4 py-3">
-            <h2 id="commit-title" class="dfr-title min-w-0">{{ $openHeader?->subject ?? substr($openCommit, 0, 7) }}</h2>
+        <header class="dfr-column-header dfr-line justify-between">
+            <h2 id="commit-title" class="dfr-title min-w-0 truncate">{{ $openHeader?->subject ?? substr($openCommit, 0, 7) }}</h2>
             <button type="button" wire:click="closeCommit" class="dfr-button shrink-0">Close</button>
         </header>
 
