@@ -174,13 +174,18 @@
     }
 }
 
-/* The panel of a commit. It slides in from the right over the page. */
+/*
+  The panel of a commit. On a narrow screen it slides in from the right over the page.
+  On a wide screen it is a column of the page, and a slide would push the page sideways.
+*/
 .dfr-panel {
     background-color: var(--dfr-bg);
 }
 
-section.dfr-panel {
-    animation: dfr-slide-in 150ms ease-out;
+@media (max-width: 47.99rem) {
+    section.dfr-panel {
+        animation: dfr-slide-in 150ms ease-out;
+    }
 }
 
 @keyframes dfr-slide-in {
@@ -379,4 +384,18 @@ section.dfr-panel {
 .dfr-markdown th {
     color: var(--dfr-muted);
     text-transform: uppercase;
+}
+
+/* The handle on the left edge of the commit panel. Drag it, or focus it and press the arrow keys. */
+.dfr-splitter {
+    flex-shrink: 0;
+    width: 0.375rem;
+    cursor: col-resize;
+    touch-action: none;
+}
+
+.dfr-splitter:hover,
+.dfr-splitter:focus-visible {
+    background-color: var(--dfr-line);
+    outline: none;
 }

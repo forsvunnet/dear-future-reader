@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ $title ?? 'Things' }} · Dear Future Reader</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js', 'domain/Dfr/resources/css/dfr.css', 'domain/Dfr/resources/js/highlight.js', 'domain/Dfr/resources/js/copy-table.js', 'domain/Dfr/resources/js/toaster.js', 'domain/Dfr/resources/js/copy-text.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js', 'domain/Dfr/resources/css/dfr.css', 'domain/Dfr/resources/js/highlight.js', 'domain/Dfr/resources/js/copy-table.js', 'domain/Dfr/resources/js/toaster.js', 'domain/Dfr/resources/js/copy-text.js', 'domain/Dfr/resources/js/splitter.js'])
     </head>
     <body class="dfr-body md:flex">
         {{-- On a narrow screen the sidebar is above the page. --}}

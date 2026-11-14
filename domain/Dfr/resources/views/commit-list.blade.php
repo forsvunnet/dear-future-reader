@@ -1,5 +1,6 @@
 @if ($commits !== [])
-    <aside class="dfr-line border-t md:sticky md:top-0 md:h-screen md:w-72 md:shrink-0 md:overflow-y-auto md:border-t-0 md:border-l">
+    {{-- The open commit panel takes the place of the commits on a wide screen. --}}
+    <aside @class(['dfr-line border-t md:sticky md:top-0 md:h-screen md:w-72 md:shrink-0 md:overflow-y-auto md:border-t-0 md:border-l', 'md:hidden' => $openCommit !== null])>
         <header class="dfr-column-header dfr-line dfr-title">Commits</header>
         <nav aria-label="Commits">
             <ul>
