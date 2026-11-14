@@ -61,7 +61,7 @@ class HookStopCommand extends Command
         $this->line((string) json_encode([
             'decision' => 'block',
             'reason' => "You edited files after the last update of the dfr thing $thing->id. Update the thing before you stop: "
-                ."append to work-log.md, tick the done todo items, write new decisions in plan.md, and connect each new commit with dfr $thing->id git:add HEAD.",
+                ."log the work with dfr $thing->id work:log, tick the done todo items, write new decisions in plan.md, and connect each new commit with dfr $thing->id git:add HEAD.",
         ], JSON_UNESCAPED_SLASHES));
 
         return 0;

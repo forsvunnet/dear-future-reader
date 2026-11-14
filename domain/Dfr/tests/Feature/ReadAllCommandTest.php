@@ -12,6 +12,21 @@ it('shows all files in the order they were first written', function () {
         ->toBe("==> todo.md <==\nthe new todo\n\n==> plan.md <==\nthe plan\n");
 });
 
+it('shows only the last session of work-log.md', function () {
+    $id = $this->init();
+    $this->dfr([$id, 'write', 'work-log.md'], "## day 1\n- old\n## day 2\n- older\n## day 3\n- new\n");
+
+    expect($this->dfr([$id, 'read:all'])->getOutput())
+        ->toBe("==> work-log.md <==\n(2 older sessions left out. Run `dfr $id read work-log.md` to see all.)\n## day 3\n- new\n");
+});
+
+it('shows all of work-log.md when it has one session', function () {
+    $id = $this->init();
+    $this->dfr([$id, 'write', 'work-log.md'], "## day 1\n- old\n");
+
+    expect($this->dfr([$id, 'read:all'])->getOutput())->toBe("==> work-log.md <==\n## day 1\n- old\n");
+});
+
 it('shows files made outside dfr last, and never dot files', function () {
     $id = $this->init();
     $this->dfr([$id, 'write', 'plan.md', 'the plan']);

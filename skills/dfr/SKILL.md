@@ -13,7 +13,7 @@ Write each file for a future reader who was not in this session. That reader can
 
 A session can stop at any time. Work that is not in the thing is lost for the next session. After each piece of work, before you go on:
 
-1. Append what you did and the next step to `work-log.md`: `dfr $ID write:append work-log.md`.
+1. Log what you did and the next step: `dfr $ID work:log "Did X. Next: Y."`. The first log of a session adds the session header.
 2. Tick the todo items that are done.
 3. Write each new decision and its reason in `plan.md`.
 4. Connect each new commit: `dfr $ID git:add HEAD`.
@@ -28,7 +28,7 @@ Tidy at the end of each step of a change or an inquiry, and when you find that a
 
 - `plan.md`: remove the options you dropped and the parts of the plan that changed. Keep each decision and its reason.
 - `facts.md`, `files.md`, `current-behaviour.md`: remove each line that is no longer true.
-- `work-log.md`: when it is longer than about 50 lines, replace the old sessions with a short summary. Keep the last session in full.
+- `work-log.md`: do not tidy it. `read:all` shows only the last session. Fix a wrong line with `write`.
 - `todo.md`: keep the ticked items. The Web UI counts them for the progress.
 - A file that no longer has a purpose: archive it.
 

@@ -94,6 +94,8 @@ dfr $ID read:all --fm     # Show only the frontmatter of each file. Also --front
 
 When the thing has projects, `read:all` starts with a line like `Projects: /path/one, /path/two` and a blank line. `read:all --json` does not show the projects.
 
+`read:all` shows only the last session of `work-log.md`, the part from the last line that starts with `## `. A note at the top says how many sessions it left out. `read work-log.md` shows all of it.
+
 ### Write
 
 ```shell
@@ -105,6 +107,14 @@ dfr $ID write:prepend [FILENAME]  # Same as write, but adds to the start of the 
 The filename is required. The content can come from a pipe, from arguments, or from both. With both, the pipe data comes first. The arguments become one line, with a space between each argument.
 
 A filename must not contain `/` or start with `.`.
+
+### Work log
+
+```shell
+dfr $ID work:log [TEXT]   # Add what you did, or the next step, to work-log.md.
+```
+
+Each line of the text becomes a list item. The text can come from a pipe, from arguments, or from both, the same as `write`. The first `work:log` of a Claude Code session first adds a header like `## 2026-11-14 session 3`. The session comes from `CLAUDE_CODE_SESSION_ID`.
 
 ### Frontmatter
 

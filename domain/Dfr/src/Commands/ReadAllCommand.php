@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Domain\Dfr\Commands;
 
 use Domain\Dfr\Actions\EncodeJson;
+use Domain\Dfr\Actions\KeepLastSession;
 use Domain\Dfr\Actions\OrderedFiles;
 use Domain\Dfr\Actions\RunOnThing;
 use Domain\Dfr\Actions\SplitFrontmatter;
@@ -28,6 +29,7 @@ class ReadAllCommand extends Command
         private SplitFrontmatter $splitFrontmatter,
         private EncodeJson $encodeJson,
         private ThingProjects $thingProjects,
+        private KeepLastSession $keepLastSession,
     ) {
         parent::__construct();
     }
@@ -49,6 +51,8 @@ class ReadAllCommand extends Command
 
                 if ($onlyFrontmatter) {
                     $content = $document->frontmatter ?? '';
+                } elseif ($fileName === 'work-log.md') {
+                    $content = ($this->keepLastSession)($content, $thing->id);
                 }
 
                 // The "==> name <==" header is the same as the header of `head` and `tail` with many files.

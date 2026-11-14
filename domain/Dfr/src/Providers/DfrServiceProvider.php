@@ -38,6 +38,7 @@ use Domain\Dfr\Commands\TodoTickCommand;
 use Domain\Dfr\Commands\TodoUntickCommand;
 use Domain\Dfr\Commands\WriteAppendCommand;
 use Domain\Dfr\Commands\WriteCommand;
+use Domain\Dfr\Commands\WorkLogCommand;
 use Domain\Dfr\Commands\WritePrependCommand;
 use Domain\Dfr\Contracts\FindGitCommit;
 use Domain\Dfr\Contracts\FindGitRepository;
@@ -71,6 +72,7 @@ class DfrServiceProvider extends ServiceProvider
             WriteCommand::class,
             WriteAppendCommand::class,
             WritePrependCommand::class,
+            WorkLogCommand::class,
             FmCommand::class,
             FmAddCommand::class,
             TodoAddCommand::class,

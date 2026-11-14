@@ -18,6 +18,7 @@ class RunOnThing
     public function __construct(
         private ReadThing $readThing,
         private AppendLog $appendLog,
+        private CurrentSession $currentSession,
     ) {}
 
     /**
@@ -34,11 +35,10 @@ class RunOnThing
         }
 
         $exitCode = $work($thing);
-        $session = getenv('CLAUDE_CODE_SESSION_ID');
 
         ($this->appendLog)($thing, new LogEntry(
             time: gmdate('Y-m-d\TH:i:s\Z'),
-            session: is_string($session) && $session !== '' ? $session : 'unknown',
+            session: ($this->currentSession)(),
             // "dfr:todo:tick" becomes "todo tick", the same words as `dfr $ID todo tick`.
             command: (string) preg_replace('/^todo:/', 'todo ', substr((string) $command->getName(), 4)),
             arguments: $this->arguments($command),
