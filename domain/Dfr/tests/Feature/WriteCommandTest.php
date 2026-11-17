@@ -17,11 +17,11 @@ it('writes from a pipe as it is', function () {
     expect(file_get_contents($this->thingFolder($id).'/plan.md'))->toBe("line one\nline two");
 });
 
-it('puts the pipe data before the arguments', function () {
+it('uses only the arguments when it gets both', function () {
     $id = $this->init();
     $this->dfr([$id, 'write', 'plan.md', 'from arguments'], 'from pipe');
 
-    expect(file_get_contents($this->thingFolder($id).'/plan.md'))->toBe("from pipe\nfrom arguments\n");
+    expect(file_get_contents($this->thingFolder($id).'/plan.md'))->toBe("from arguments\n");
 });
 
 it('overwrites the file', function () {
@@ -57,4 +57,19 @@ it('keeps the files of writes that run at the same time', function () {
     $data = json_decode((string) file_get_contents($this->thingFolder($id).'/.thing.json'), true);
 
     expect($data['files'])->toHaveCount(10);
+});
+
+it('does not wait for the pipe when the content comes as arguments', function () {
+    $id = $this->init();
+    // A pipe that stays open with no data, like the stdin of some agent shells.
+    $process = new Symfony\Component\Process\Process(
+        [base_path('dfr'), $id, 'write', 'plan.md', 'the', 'plan'],
+        $this->home,
+        ['HOME' => $this->home, 'CLAUDE_CODE_SESSION_ID' => false],
+        new Symfony\Component\Process\InputStream,
+        10,
+    );
+    $process->run();
+
+    expect(file_get_contents($this->thingFolder($id).'/plan.md'))->toBe("the plan\n");
 });

@@ -266,6 +266,16 @@
     color: var(--dfr-muted);
 }
 
+/* A .log file. Each line stays a line, and a long line wraps like the other text. */
+.dfr-log {
+    white-space: pre-wrap;
+}
+
+/* The time at the start of a line in a .log file. It is quiet, so the text of the line stands out. */
+.dfr-log-time {
+    color: var(--dfr-muted);
+}
+
 .dfr-danger {
     color: var(--dfr-danger);
 }

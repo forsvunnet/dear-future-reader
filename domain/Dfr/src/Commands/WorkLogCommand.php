@@ -15,9 +15,9 @@ use Illuminate\Console\Command;
 
 class WorkLogCommand extends Command
 {
-    protected $signature = 'dfr:work:log {id} {text?* : What you did, or the next step. Piped data comes first.}';
+    protected $signature = 'dfr:work:log {id} {text?* : What you did, or the next step. With none, it comes from the pipe.}';
 
-    protected $description = 'Add lines to work-log.md. The first line of a session gets a session header.';
+    protected $description = 'Add lines to work.log. The first line of a session gets a session header.';
 
     public function __construct(
         private RunOnThing $runOnThing,
@@ -42,8 +42,11 @@ class WorkLogCommand extends Command
             }
 
             // ponytail: with no CLAUDE_CODE_SESSION_ID, every run is the session "unknown", so it gets no new header.
-            $newSession = ! ($this->loggedWorkInSession)($thing, ($this->currentSession)());
-            ($this->changeFile)($thing, 'work-log.md', fn (string $oldContent) => ($this->appendWorkLog)($oldContent, $text, $newSession));
+            $session = ($this->currentSession)();
+            $newSession = ! ($this->loggedWorkInSession)($thing, $session);
+            // The Web UI puts the session ID in HTML, so only a plain ID goes in the line.
+            $sessionId = $session !== 'unknown' && preg_match('/^[A-Za-z0-9-]+$/', $session) === 1 ? $session : null;
+            ($this->changeFile)($thing, 'work.log', fn (string $oldContent) => ($this->appendWorkLog)($oldContent, $text, $newSession, $sessionId));
 
             return 0;
         });

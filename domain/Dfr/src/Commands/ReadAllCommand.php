@@ -51,7 +51,7 @@ class ReadAllCommand extends Command
 
                 if ($onlyFrontmatter) {
                     $content = $document->frontmatter ?? '';
-                } elseif ($fileName === 'work-log.md') {
+                } elseif ($fileName === 'work.log') {
                     $content = ($this->keepLastSession)($content, $thing->id);
                 }
 

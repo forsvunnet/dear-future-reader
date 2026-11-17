@@ -13,7 +13,7 @@ use Illuminate\Console\Command;
 
 class WriteCommand extends Command
 {
-    protected $signature = 'dfr:write {id} {file} {content?* : The content. Piped data comes first.}';
+    protected $signature = 'dfr:write {id} {file} {content?* : The content. With none, it comes from the pipe.}';
 
     protected $description = 'Write the file. Overwrites the file if it exists.';
 

@@ -10,10 +10,13 @@ use Domain\Dfr\Actions\ParseTodoLists;
 use Domain\Dfr\Actions\ReadThing;
 use Domain\Dfr\Actions\RenderBody;
 use Domain\Dfr\Actions\RenderCsv;
+use Domain\Dfr\Actions\RenderLog;
 use Domain\Dfr\Actions\SaveFileIfUnchanged;
 use Domain\Dfr\Actions\SplitFrontmatter;
 use Domain\Dfr\Actions\ThingProjects;
+use Domain\Dfr\Actions\ThingSessions;
 use Domain\Dfr\Actions\ToggleTodoItem;
+use Domain\Dfr\Contracts\OpenFolder;
 use Domain\Dfr\Contracts\ReadGitCommitChanges;
 use Domain\Dfr\Contracts\ReadGitCommitHeader;
 use Domain\Dfr\Data\GitCommit;
@@ -70,13 +73,19 @@ class ThingPage extends Component
 
     private RenderCsv $renderCsv;
 
+    private RenderLog $renderLog;
+
     private ToggleTodoItem $toggleTodoItem;
 
     private ThingProjects $thingProjects;
 
+    private ThingSessions $thingSessions;
+
     private ReadGitCommitHeader $readGitCommitHeader;
 
     private ReadGitCommitChanges $readGitCommitChanges;
+
+    private OpenFolder $openFolder;
 
     // Livewire makes the component itself, so the dependencies come in through boot instead of the constructor.
     public function boot(
@@ -88,10 +97,13 @@ class ThingPage extends Component
         ParseTodoLists $parseTodoLists,
         RenderBody $renderBody,
         RenderCsv $renderCsv,
+        RenderLog $renderLog,
         ToggleTodoItem $toggleTodoItem,
         ThingProjects $thingProjects,
+        ThingSessions $thingSessions,
         ReadGitCommitHeader $readGitCommitHeader,
         ReadGitCommitChanges $readGitCommitChanges,
+        OpenFolder $openFolder,
     ): void {
         $this->readThing = $readThing;
         $this->orderedFiles = $orderedFiles;
@@ -101,10 +113,19 @@ class ThingPage extends Component
         $this->parseTodoLists = $parseTodoLists;
         $this->renderBody = $renderBody;
         $this->renderCsv = $renderCsv;
+        $this->renderLog = $renderLog;
         $this->toggleTodoItem = $toggleTodoItem;
         $this->thingProjects = $thingProjects;
+        $this->thingSessions = $thingSessions;
         $this->readGitCommitHeader = $readGitCommitHeader;
         $this->readGitCommitChanges = $readGitCommitChanges;
+        $this->openFolder = $openFolder;
+    }
+
+    // The Web UI runs on the computer of the person, so the folder opens on the same screen as the browser.
+    public function openFolder(): void
+    {
+        ($this->openFolder)($this->thing()->folder);
     }
 
     public function showCommit(string $hash): void
@@ -223,6 +244,12 @@ class ThingPage extends Component
                 continue;
             }
 
+            if (str_ends_with($fileName, '.log')) {
+                $bodies[$fileName] = ($this->renderLog)($content);
+
+                continue;
+            }
+
             $items = array_merge(...array_map(fn (TodoList $list) => $list->items, ($this->parseTodoLists)($fileName, $content)));
             $bodies[$fileName] = ($this->renderBody)($fileName, $content, $items);
 
@@ -240,6 +267,7 @@ class ThingPage extends Component
             'thing' => $thing,
             'parent' => $thing->parent === null ? null : ($this->readThing)($thing->parent),
             'projects' => ($this->thingProjects)($thing),
+            'sessions' => ($this->thingSessions)($thing),
             'documents' => $documents,
             'bodies' => $bodies,
             'progress' => $progress,

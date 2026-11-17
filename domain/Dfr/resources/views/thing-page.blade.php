@@ -7,10 +7,11 @@
             <h1 class="dfr-title min-w-0 truncate" title="{{ $thing->name }}">{{ $thing->name }}</h1>
             <span class="dfr-muted shrink-0">{{ $thing->id }}</span>
             <button type="button" x-data x-on:click="copyText(@js('dfr ' . $thing->id))" class="dfr-button shrink-0">Copy</button>
+            <button type="button" wire:click="openFolder" class="dfr-button shrink-0" title="Open the folder of the thing in Finder">Finder</button>
         </header>
 
         <div class="px-4 py-6">
-            @if ($thing->parent !== null || $projects !== [])
+            @if ($thing->parent !== null || $projects !== [] || $sessions !== [])
                 <dl class="mb-6 grid grid-cols-[auto_1fr] gap-x-4">
                     @if ($thing->parent !== null)
                         <dt class="dfr-label">Parent</dt>
@@ -27,6 +28,18 @@
                         <dd>
                             @foreach ($projects as $project)
                                 <span class="block">{{ $project }}</span>
+                            @endforeach
+                        </dd>
+                    @endif
+                    @if ($sessions !== [])
+                        <dt class="dfr-label">Sessions</dt>
+                        <dd>
+                            @foreach ($sessions as $session)
+                                @php($time = \Illuminate\Support\Carbon::parse($session->lastTime))
+                                <span class="block">
+                                    <span title="{{ $session->id }}">{{ $session->title ?? $session->id }}</span>
+                                    <time class="dfr-muted" datetime="{{ $session->lastTime }}" title="{{ $session->lastTime }}">{{ $time->diffForHumans() }}</time>
+                                </span>
                             @endforeach
                         </dd>
                     @endif

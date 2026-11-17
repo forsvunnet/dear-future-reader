@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Domain\Dfr\Actions\ReadSessionTitleFromClaudeCode;
+use Domain\Dfr\Contracts\OpenFolder;
+use Domain\Dfr\Contracts\ReadSessionTitle;
 use Domain\Dfr\Livewire\ThingList;
 use Domain\Dfr\Livewire\ThingPage;
 use Domain\Dfr\ValueObjects\ThingsRoot;
@@ -12,7 +15,23 @@ use Symfony\Component\Process\Process;
 beforeEach(function () {
     // The dfr script reads the things from the temporary home folder. The Web UI must read the same folder.
     $this->app->instance(ThingsRoot::class, new ThingsRoot("$this->home/.dfr"));
+    $this->app->instance(ReadSessionTitle::class, new ReadSessionTitleFromClaudeCode("$this->home/.claude"));
 });
+
+/**
+ * Writes a Claude Code transcript with the titles of the session in it, the last title last.
+ */
+function writeTranscript(string $home, string $session, string ...$titles): void
+{
+    @mkdir("$home/.claude/projects/-Users-me-shop", 0777, true);
+    $lines = ['{"type":"user","sessionId":"'.$session.'","message":{"content":"custom-title"}}'];
+
+    foreach ($titles as $title) {
+        $lines[] = json_encode(['type' => 'custom-title', 'customTitle' => $title, 'sessionId' => $session]);
+    }
+
+    file_put_contents("$home/.claude/projects/-Users-me-shop/$session.jsonl", implode("\n", $lines)."\n");
+}
 
 it('lets php artisan serve pass the home folder to the Web UI', function () {
     expect(ServeCommand::$passthroughVariables)->toContain('HOME');
@@ -354,4 +373,72 @@ it('closes a file with more than 400 changed lines', function () {
     $open = array_combine($matches[2], array_map(fn ($attributes) => str_contains($attributes, ' open '), $matches[1]));
 
     expect($open)->toBe(['large.txt' => false, 'small.txt' => true]);
+});
+
+it('shows a .log file as plain text, with each time as a relative time and the full time in the tooltip', function () {
+    $this->travelTo(Carbon\Carbon::parse('2026-11-01T12:00:00Z'));
+    $id = $this->init();
+    $this->dfr([$id, 'write', 'work.log'], "2026-11-01T10:00:00Z session 1\n2026-11-01T11:59:00Z <b>old</b>\nno time here\n");
+
+    $this->get("/things/$id")
+        ->assertOk()
+        ->assertSee('<div class="dfr-log">'
+            .'<time datetime="2026-11-01T10:00:00Z" title="2026-11-01T10:00:00Z" class="dfr-log-time">2 hours ago</time> session 1'."\n"
+            .'<time datetime="2026-11-01T11:59:00Z" title="2026-11-01T11:59:00Z" class="dfr-log-time">1 minute ago</time> &lt;b&gt;old&lt;/b&gt;'."\n"
+            ."no time here\n</div>", false);
+});
+
+it('opens the folder of the thing in Finder', function () {
+    $id = $this->init();
+    $opened = [];
+    $this->app->instance(OpenFolder::class, new class($opened) implements OpenFolder
+    {
+        /** @param  list<string>  $opened */
+        public function __construct(private array &$opened) {}
+
+        public function __invoke(string $folder): void
+        {
+            $this->opened[] = $folder;
+        }
+    });
+
+    Livewire::test(ThingPage::class, ['id' => $id])
+        ->assertSeeHtml('wire:click="openFolder"')
+        ->call('openFolder');
+
+    expect($opened)->toBe(["$this->home/.dfr/$id"]);
+});
+
+it('shows the current session title in place of the session ID in work.log', function () {
+    $id = $this->init();
+    $this->dfr([$id, 'work:log', 'Did it.'], env: ['CLAUDE_CODE_SESSION_ID' => 'aaa-1']);
+    writeTranscript($this->home, 'aaa-1', 'Old title', 'Fix the <cart>');
+
+    $this->get("/things/$id")
+        ->assertOk()
+        ->assertSee('session 1 <span title="aaa-1">Fix the &lt;cart&gt;</span>', false)
+        ->assertDontSee('Old title');
+});
+
+it('shows the session ID in work.log when the session has no title', function () {
+    $id = $this->init();
+    $this->dfr([$id, 'work:log', 'Did it.'], env: ['CLAUDE_CODE_SESSION_ID' => 'bbb-2']);
+
+    $this->get("/things/$id")
+        ->assertOk()
+        ->assertSee('session 1 <span title="bbb-2">bbb-2</span>', false);
+});
+
+it('lists the sessions of a thing under the projects', function () {
+    $repository = $this->makeRepository('shop');
+    $id = trim($this->dfr(['init', 'test'], folder: $repository)->getOutput());
+    $this->dfr([$id, 'work:log', 'First.'], env: ['CLAUDE_CODE_SESSION_ID' => 'aaa-1']);
+    $this->dfr([$id, 'work:log', 'Second.'], env: ['CLAUDE_CODE_SESSION_ID' => 'bbb-2']);
+    $this->dfr([$id, 'read:all']);
+    writeTranscript($this->home, 'aaa-1', 'Fix the cart');
+
+    $this->withSession(['dfr.project' => null])->get("/things/$id")
+        ->assertOk()
+        ->assertSeeInOrder(['Projects', realpath($repository), 'Sessions', 'bbb-2', 'Fix the cart'])
+        ->assertDontSee('>unknown<', false);
 });

@@ -14,7 +14,7 @@ use Illuminate\Console\Command;
 
 class WriteAppendCommand extends Command
 {
-    protected $signature = 'dfr:write:append {id} {file} {content?* : The content. Piped data comes first.}';
+    protected $signature = 'dfr:write:append {id} {file} {content?* : The content. With none, it comes from the pipe.}';
 
     protected $description = 'Add to the end of the file.';
 

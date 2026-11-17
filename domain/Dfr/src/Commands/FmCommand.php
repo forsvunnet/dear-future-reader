@@ -17,7 +17,7 @@ use Illuminate\Console\Command;
 
 class FmCommand extends Command
 {
-    protected $signature = 'dfr:fm {id} {file} {yaml?* : The YAML. Piped data comes first.}';
+    protected $signature = 'dfr:fm {id} {file} {yaml?* : The YAML. With none, it comes from the pipe.}';
 
     protected $description = 'Write or replace all of the frontmatter.';
 

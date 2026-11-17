@@ -94,7 +94,7 @@ dfr $ID read:all --fm     # Show only the frontmatter of each file. Also --front
 
 When the thing has projects, `read:all` starts with a line like `Projects: /path/one, /path/two` and a blank line. `read:all --json` does not show the projects.
 
-`read:all` shows only the last session of `work-log.md`, the part from the last line that starts with `## `. A note at the top says how many sessions it left out. `read work-log.md` shows all of it.
+`read:all` shows only the last session of `work.log`, the part from the last session line. A note at the top says how many sessions it left out. `read work.log` shows all of it.
 
 ### Write
 
@@ -104,17 +104,21 @@ dfr $ID write:append [FILENAME]   # Same as write, but adds to the end of the fi
 dfr $ID write:prepend [FILENAME]  # Same as write, but adds to the start of the file, after the frontmatter.
 ```
 
-The filename is required. The content can come from a pipe, from arguments, or from both. With both, the pipe data comes first. The arguments become one line, with a space between each argument.
+The filename is required. The content comes from the arguments or from a pipe. The arguments become one line, with a space between each argument. With arguments, dfr does not read the pipe.
 
 A filename must not contain `/` or start with `.`.
 
 ### Work log
 
 ```shell
-dfr $ID work:log [TEXT]   # Add what you did, or the next step, to work-log.md.
+dfr $ID work:log [TEXT]   # Add what you did, or the next step, to work.log.
 ```
 
-Each line of the text becomes a list item. The text can come from a pipe, from arguments, or from both, the same as `write`. The first `work:log` of a Claude Code session first adds a header like `## 2026-11-14 session 3`. The session comes from `CLAUDE_CODE_SESSION_ID`.
+`work.log` is plain text, and dfr only adds to the end of it. Each line of the text gets the time in UTC first, like `2026-11-14T12:00:00Z Did X.`. Blank lines are left out. The text comes from the arguments or from a pipe, the same as `write`.
+
+The first `work:log` of a Claude Code session first adds a session line, like `2026-11-14T12:00:00Z session 3 SESSION-ID`. The session ID comes from `CLAUDE_CODE_SESSION_ID`.
+
+The Web UI shows a `.log` file as plain text.
 
 ### Frontmatter
 
@@ -228,6 +232,8 @@ Then open http://localhost:8000. Run `npm run build` first if `public/build/` do
 Save fails when the file changed after you opened it, for example when a session wrote to it. Your text stays in the editor, so you can copy it.
 
 Each save and each tick writes a log line with the session `web`.
+
+The Web UI shows the title of each Claude Code session in place of its ID: in the session lines of `work.log`, and in the list of sessions under the projects. The title comes from the transcript of the session in `~/.claude/projects`, or in `CLAUDE_CONFIG_DIR` when it is set. A session with no title shows its ID.
 
 The Web UI has no login. `php artisan serve` listens only on your own machine.
 

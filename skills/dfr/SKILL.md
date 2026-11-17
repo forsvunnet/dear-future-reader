@@ -13,7 +13,7 @@ Write each file for a future reader who was not in this session. That reader can
 
 A session can stop at any time. Work that is not in the thing is lost for the next session. After each piece of work, before you go on:
 
-1. Log what you did and the next step: `dfr $ID work:log "Did X. Next: Y."`. The first log of a session adds the session header.
+1. Log what you did and the next step: `dfr $ID work:log "Did X. Next: Y."`. Each line gets the time. The first log of a session adds a session line.
 2. Tick the todo items that are done.
 3. Write each new decision and its reason in `plan.md`.
 4. Connect each new commit: `dfr $ID git:add HEAD`.
@@ -28,7 +28,7 @@ Tidy at the end of each step of a change or an inquiry, and when you find that a
 
 - `plan.md`: remove the options you dropped and the parts of the plan that changed. Keep each decision and its reason.
 - `facts.md`, `files.md`, `current-behaviour.md`: remove each line that is no longer true.
-- `work-log.md`: do not tidy it. `read:all` shows only the last session. Fix a wrong line with `write`.
+- `work.log`: do not tidy or change it. dfr only adds to the end. `read:all` shows only the last session. Log a correction as a new line. An old thing can also have a `work-log.md` from before `work:log`. Leave it as it is.
 - `todo.md`: keep the ticked items. The Web UI counts them for the progress.
 - A file that no longer has a purpose: archive it.
 
@@ -87,7 +87,7 @@ Suggested filenames and content
 - `todo.md`: the steps as a Markdown todo list.
 - `files.md`: the list of files relevant to the thing.
 - `edited-files.md`: the list of files that have been edited.
-- `work-log.md`: what each session did, and the next step.
+- `work.log`: what each session did, and the next step. Write to it only with `work:log`.
 - `review-instructions.md`: the instructions for reviewing the work. This is the verbatim text used to spawn a fresh agent for the review.
 - `review.md`: the review result and feedback on the work.
 - `qa.md`: the questions and answers related to the work.

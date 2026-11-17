@@ -18,7 +18,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class FmAddCommand extends Command
 {
-    protected $signature = 'dfr:fm:add {id} {file} {yaml?* : The YAML. Piped data comes first.}';
+    protected $signature = 'dfr:fm:add {id} {file} {yaml?* : The YAML. With none, it comes from the pipe.}';
 
     protected $description = 'Add or replace the given attributes. Keeps the other attributes.';
 

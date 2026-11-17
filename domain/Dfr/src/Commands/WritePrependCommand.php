@@ -14,7 +14,7 @@ use Illuminate\Console\Command;
 
 class WritePrependCommand extends Command
 {
-    protected $signature = 'dfr:write:prepend {id} {file} {content?* : The content. Piped data comes first.}';
+    protected $signature = 'dfr:write:prepend {id} {file} {content?* : The content. With none, it comes from the pipe.}';
 
     protected $description = 'Add to the start of the file, after the frontmatter.';
 
