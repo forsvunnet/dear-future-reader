@@ -38,23 +38,17 @@ class SearchByMeaningWithQmd implements SearchByMeaning
                 continue;
             }
 
-            $matches[] = new MeaningMatch($parts[1], $parts[2], is_int($line) ? $line : 1, is_string($snippet) ? $this->firstLine($snippet) : '');
+            $matches[] = new MeaningMatch($parts[1], $parts[2], is_int($line) ? $line : 1, is_string($snippet) ? $this->snippetText($snippet) : '');
         }
 
         return $matches;
     }
 
     /**
-     * The first line of the snippet with text. The snippet starts with a line like "@@ -1,4 @@ (0 before, 1 after)".
+     * The snippet without its first line, which is like "@@ -1,4 @@ (0 before, 1 after)".
      */
-    private function firstLine(string $snippet): string
+    private function snippetText(string $snippet): string
     {
-        foreach (explode("\n", $snippet) as $line) {
-            if (trim($line) !== '' && ! str_starts_with($line, '@@ ')) {
-                return trim($line);
-            }
-        }
-
-        return '';
+        return trim(preg_replace('/^@@ [^\n]*\n?/', '', $snippet) ?? $snippet);
     }
 }

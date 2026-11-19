@@ -43,7 +43,8 @@ it('shows the things and files that QMD finds, and skips the things that are gon
         ->assertSee('Search with QMD')
         ->call('start')
         ->assertSee('Login page')
-        ->assertSee("$id · plan.md:3")
+        ->assertSee("$id · 1 part")
+        ->assertSee("plan.md:3")
         ->assertSee('The login form sends the password.')
         ->assertDontSee('Old text');
 
@@ -91,6 +92,21 @@ it('starts the embed when the web server gives PHP no PATH', function () {
     }
 
     expect(file_get_contents("$this->home/embed.log"))->toBe("Embedded\n");
+});
+
+it('keeps the QMD results when a new page opens, and does not run qmd again', function () {
+    $id = $this->init('Login page');
+    $json = json_encode([['file' => "qmd://things/$id/plan.md?index=dfr", 'line' => 3, 'snippet' => 'The login form sends the password.']]);
+    $qmd = fakeQmd($this->home, "cat <<'EOF'\n$json\nEOF");
+
+    Livewire::test(MeaningSearch::class, ['text' => 'login'])->call('start');
+
+    Livewire::test(MeaningSearch::class, ['text' => 'login'])
+        ->assertSee('The login form sends the password.')
+        ->assertDontSee('Search with QMD');
+    Livewire::test(MeaningSearch::class, ['text' => 'other text'])->assertSee('Search with QMD');
+
+    expect(file($qmd.'.args'))->toHaveCount(1);
 });
 
 it('shows the error when the QMD search fails', function () {
