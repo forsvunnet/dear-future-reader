@@ -34,6 +34,8 @@
                 @endforeach
             </ul>
         @endif
+        {{-- Each search text gets its own copy, so the QMD results of an old text do not stay. --}}
+        @livewire(\Domain\Dfr\Livewire\MeaningSearch::class, ['text' => $search], key('meaning-'.md5($search)))
     @elseif ($level === 'projects')
         @if (! $hasThings)
             <p class="px-4 py-2">There are no things. Make one with <code>dfr init "name"</code>.</p>

@@ -409,3 +409,13 @@
     background-color: var(--dfr-line);
     outline: none;
 }
+
+/* The cog that opens the search tools. It sits in the bottom right of every page, under the toasts. */
+.dfr-cog {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 10;
+    width: 2.5rem;
+    height: 2.5rem;
+}

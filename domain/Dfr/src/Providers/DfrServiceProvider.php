@@ -8,11 +8,13 @@ use Domain\Dfr\Actions\FindGitCommitWithGit;
 use Domain\Dfr\Actions\FindGitRepositoryWithGit;
 use Domain\Dfr\Actions\FindLinesWithPhp;
 use Domain\Dfr\Actions\FindLinesWithRipgrep;
+use Domain\Dfr\Actions\FindTool;
 use Domain\Dfr\Actions\LoadThingsRoot;
 use Domain\Dfr\Actions\OpenFolderInFinder;
 use Domain\Dfr\Actions\ReadGitCommitChangesWithGit;
 use Domain\Dfr\Actions\ReadGitCommitHeaderWithGit;
 use Domain\Dfr\Actions\ReadSessionTitleFromClaudeCode;
+use Domain\Dfr\Actions\SearchByMeaningWithQmd;
 use Domain\Dfr\Commands\FilesArchiveCommand;
 use Domain\Dfr\Commands\FilesCommand;
 use Domain\Dfr\Commands\FilesReorderCommand;
@@ -51,10 +53,12 @@ use Domain\Dfr\Contracts\OpenFolder;
 use Domain\Dfr\Contracts\ReadGitCommitChanges;
 use Domain\Dfr\Contracts\ReadGitCommitHeader;
 use Domain\Dfr\Contracts\ReadSessionTitle;
+use Domain\Dfr\Contracts\SearchByMeaning;
+use Domain\Dfr\ValueObjects\Qmd;
+use Domain\Dfr\ValueObjects\QmdEmbedFiles;
 use Domain\Dfr\ValueObjects\ThingsRoot;
 use Illuminate\Foundation\Console\ServeCommand;
 use Illuminate\Support\ServiceProvider;
-use Symfony\Component\Process\ExecutableFinder;
 
 class DfrServiceProvider extends ServiceProvider
 {
@@ -66,12 +70,16 @@ class DfrServiceProvider extends ServiceProvider
         $this->app->bind(ReadGitCommitHeader::class, ReadGitCommitHeaderWithGit::class);
         $this->app->bind(ReadGitCommitChanges::class, ReadGitCommitChangesWithGit::class);
         $this->app->bind(OpenFolder::class, OpenFolderInFinder::class);
-        // A web server like Herd runs PHP with a short PATH, so also look in the folders where Homebrew installs rg.
+        $this->app->bind(FindTool::class, fn () => new FindTool((string) getenv('HOME')));
         $this->app->bind(FindLines::class, function () {
-            $rg = (new ExecutableFinder)->find('rg', null, ['/opt/homebrew/bin', '/usr/local/bin']);
+            $rg = $this->app->make(FindTool::class)('rg');
 
             return $rg === null ? new FindLinesWithPhp : new FindLinesWithRipgrep($rg);
         });
+        // The things have their own QMD index, so the default index of the user stays as it is.
+        $this->app->singleton(Qmd::class, fn () => new Qmd($this->app->make(FindTool::class)('qmd'), 'dfr'));
+        $this->app->singleton(QmdEmbedFiles::class, fn () => new QmdEmbedFiles(storage_path('app/dfr-qmd-embed.pid'), storage_path('app/dfr-qmd-embed.log')));
+        $this->app->bind(SearchByMeaning::class, SearchByMeaningWithQmd::class);
         // Claude Code keeps its files in CLAUDE_CONFIG_DIR, or in ~/.claude when it is not set.
         $this->app->bind(ReadSessionTitle::class, fn () => new ReadSessionTitleFromClaudeCode(
             (string) (getenv('CLAUDE_CONFIG_DIR') ?: getenv('HOME').'/.claude'),

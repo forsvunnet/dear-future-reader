@@ -19,6 +19,8 @@
             {{ $slot }}
         </main>
 
+        @livewire(\Domain\Dfr\Livewire\ToolsModal::class)
+
         {{-- Alpine owns the content of the toaster. Show a toast from any element with window.toast({ message, description }). --}}
         <div x-data="toaster" aria-live="polite" class="dfr-toaster">
             <template x-for="t in toasts" :key="t.id">
