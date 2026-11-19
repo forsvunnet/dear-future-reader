@@ -31,7 +31,7 @@ After the report, update "Current status" below.
 - Phase 3 is done. The todo commands are in the Dfr domain too.
 - Phase 4 is done. All commands in the README work. Each command on a thing goes through `RunOnThing`, which checks the ID and writes the log.
 - Phase 5 is done. The `dfr` skill is in `skills/dfr/`. Thing `mpg` ran over two sessions with the skill.
-- Phase 6 is done. The Web UI is in the Dfr domain. Start it with `php artisan serve`.
+- Phase 6 is done. The Web UI is in the Dfr domain. Valet or Herd serves it at the folder name plus `.test`, for example https://dear-future-reader.test/.
 - All phases are done.
 - Each thing shows its projects: the git repository where `init` ran, the repositories from `project:add` and the repositories of its commits. See `ThingProjects`.
 - The Web UI sidebar has two levels: the projects, then the things of the selected project. The session keeps the selected project. See `ThingList`.
