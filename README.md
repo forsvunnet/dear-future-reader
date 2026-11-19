@@ -26,7 +26,7 @@ Dear Future Reader is a Laravel 13 app on the TALL stack: Tailwind, Alpine.js, L
 
 1. Clone the repository.
 2. Run `composer install` and `npm install`.
-3. Install ripgrep, for example with `brew install ripgrep`. The search uses it.
+3. Optional: install ripgrep, for example with `brew install ripgrep`. It makes the search faster.
 4. Add the `dfr` script in the project root to your `PATH`.
 
 The `dfr` script calls `php artisan` inside the project.
@@ -75,7 +75,7 @@ A thing relates to projects. A project is a git repository: the repository where
 
 `list` shows one thing on each line: the ID, the name and the projects, with a tab between them. The projects show as folder names, with ", " between them. A thing with no projects has no projects column. `--tree` puts each child under its parent, with two spaces of indent for each level. `--tree` does not work together with `--json`.
 
-`search` finds the things where each word is in the context files, the name or the project names. The words can be on different lines and in different files. It ignores case and takes the words as plain text. It does not search archived files. It needs [ripgrep](https://github.com/BurntSushi/ripgrep), the `rg` command.
+`search` finds the things where each word is in the context files, the name or the project names. The words can be on different lines and in different files. It ignores case and takes the words as plain text. It does not search archived files. It uses [ripgrep](https://github.com/BurntSushi/ripgrep), the `rg` command, when it is installed. Without ripgrep, a slower scan in PHP does the search.
 
 The things where the name contains all the words come first. Then the things with the most matched lines come first.
 

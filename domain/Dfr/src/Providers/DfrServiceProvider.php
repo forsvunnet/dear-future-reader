@@ -6,6 +6,7 @@ namespace Domain\Dfr\Providers;
 
 use Domain\Dfr\Actions\FindGitCommitWithGit;
 use Domain\Dfr\Actions\FindGitRepositoryWithGit;
+use Domain\Dfr\Actions\FindLinesWithPhp;
 use Domain\Dfr\Actions\FindLinesWithRipgrep;
 use Domain\Dfr\Actions\LoadThingsRoot;
 use Domain\Dfr\Actions\OpenFolderInFinder;
@@ -53,6 +54,7 @@ use Domain\Dfr\Contracts\ReadSessionTitle;
 use Domain\Dfr\ValueObjects\ThingsRoot;
 use Illuminate\Foundation\Console\ServeCommand;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\Process\ExecutableFinder;
 
 class DfrServiceProvider extends ServiceProvider
 {
@@ -64,7 +66,12 @@ class DfrServiceProvider extends ServiceProvider
         $this->app->bind(ReadGitCommitHeader::class, ReadGitCommitHeaderWithGit::class);
         $this->app->bind(ReadGitCommitChanges::class, ReadGitCommitChangesWithGit::class);
         $this->app->bind(OpenFolder::class, OpenFolderInFinder::class);
-        $this->app->bind(FindLines::class, FindLinesWithRipgrep::class);
+        // A web server like Herd runs PHP with a short PATH, so also look in the folders where Homebrew installs rg.
+        $this->app->bind(FindLines::class, function () {
+            $rg = (new ExecutableFinder)->find('rg', null, ['/opt/homebrew/bin', '/usr/local/bin']);
+
+            return $rg === null ? new FindLinesWithPhp : new FindLinesWithRipgrep($rg);
+        });
         // Claude Code keeps its files in CLAUDE_CONFIG_DIR, or in ~/.claude when it is not set.
         $this->app->bind(ReadSessionTitle::class, fn () => new ReadSessionTitleFromClaudeCode(
             (string) (getenv('CLAUDE_CONFIG_DIR') ?: getenv('HOME').'/.claude'),

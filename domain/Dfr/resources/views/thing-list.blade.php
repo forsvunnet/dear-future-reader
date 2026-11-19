@@ -5,7 +5,9 @@
         <input id="dfr-search" type="search" wire:model.live.debounce.300ms="search" placeholder="Search" autocomplete="off" class="dfr-input w-full">
     </div>
     @if ($level === 'search')
-        @if ($results === [])
+        @if ($error !== null)
+            <p role="alert" class="px-4 py-2">The search failed: {{ $error }}</p>
+        @elseif ($results === [])
             <p class="px-4 py-2">No thing contains all the words.</p>
         @else
             <ul>

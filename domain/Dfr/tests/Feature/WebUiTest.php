@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Domain\Dfr\Actions\ReadSessionTitleFromClaudeCode;
+use Domain\Dfr\Contracts\FindLines;
 use Domain\Dfr\Contracts\OpenFolder;
 use Domain\Dfr\Contracts\ReadSessionTitle;
 use Domain\Dfr\Livewire\ThingList;
@@ -472,4 +473,19 @@ it('says so when no thing matches the search', function () {
     Livewire::test(ThingList::class)
         ->set('search', 'nothing')
         ->assertSee('No thing contains all the words.');
+});
+
+it('shows the error in the sidebar when the search fails', function () {
+    $this->init('Login page');
+    $this->app->instance(FindLines::class, new class implements FindLines
+    {
+        public function __invoke(array $paths, array $words): array
+        {
+            throw new RuntimeException('ripgrep failed: rg: not found');
+        }
+    });
+
+    Livewire::test(ThingList::class)
+        ->set('search', 'login')
+        ->assertSee('The search failed: ripgrep failed: rg: not found');
 });

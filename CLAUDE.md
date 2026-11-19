@@ -35,5 +35,5 @@ After the report, update "Current status" below.
 - All phases are done.
 - Each thing shows its projects: the git repository where `init` ran, the repositories from `project:add` and the repositories of its commits. See `ThingProjects`.
 - The Web UI sidebar has two levels: the projects, then the things of the selected project. The session keeps the selected project. See `ThingList`.
-- The search matches words per thing and uses ripgrep through the `FindLines` contract. The Web UI sidebar has a search box. See `SearchThings`.
+- The search matches words per thing and uses ripgrep through the `FindLines` contract. Without ripgrep, `FindLinesWithPhp` scans the files. The Web UI sidebar has a search box. See `SearchThings`.
 - The opt-in Claude Code hooks are the `dfr hook:*` commands. The README section "Hooks (opt-in)" shows how to add them.

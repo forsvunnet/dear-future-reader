@@ -14,6 +14,13 @@ use Symfony\Component\Process\Process;
  */
 class FindLinesWithRipgrep implements FindLines
 {
+    /**
+     * @param  string  $rg  The full path of the rg command.
+     */
+    public function __construct(
+        private string $rg,
+    ) {}
+
     public function __invoke(array $paths, array $words): array
     {
         if ($paths === [] || $words === []) {
@@ -22,7 +29,7 @@ class FindLinesWithRipgrep implements FindLines
 
         $patterns = array_merge(...array_map(fn (string $word) => ['-e', $word], $words));
         // --fixed-strings: the words are plain text, not regex. --no-config: a user config must not change the output.
-        $process = new Process(['rg', '--json', '--fixed-strings', '--ignore-case', '--no-config', ...$patterns, '--', ...$paths]);
+        $process = new Process([$this->rg, '--json', '--fixed-strings', '--ignore-case', '--no-config', ...$patterns, '--', ...$paths]);
         $process->run();
 
         // Exit code 1 means that no line matches.

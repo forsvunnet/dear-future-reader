@@ -15,6 +15,7 @@ use Domain\Dfr\Data\Thing;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use RuntimeException;
 
 /**
  * The sidebar in two levels. The first level lists the projects. The second level lists the things of the selected project,
@@ -58,9 +59,19 @@ class ThingList extends Component
     public function render(ListThings $listThings, LastActive $lastActive, SortByRecentActivity $sortByRecentActivity, SortAsTree $sortAsTree, ThingProjects $thingProjects, ProjectsByRecentActivity $projectsByRecentActivity, SearchThings $searchThings): View
     {
         if (trim($this->search) !== '') {
+            // The session keeps the search text, so a failed search must not break every page.
+            try {
+                $results = $searchThings($this->search);
+                $error = null;
+            } catch (RuntimeException $exception) {
+                $results = [];
+                $error = $exception->getMessage();
+            }
+
             return view('dfr::thing-list', [
                 'level' => 'search',
-                'results' => $searchThings($this->search),
+                'results' => $results,
+                'error' => $error,
             ]);
         }
 
