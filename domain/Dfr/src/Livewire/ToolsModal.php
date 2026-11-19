@@ -103,7 +103,7 @@ class ToolsModal extends Component
         }
 
         return view('dfr::tools-modal', [
-            'tools' => [$readToolStatus('rg', $findTool('rg')), $readToolStatus('qmd', $qmd->path)],
+            'tools' => [$readToolStatus('rg', $findTool('rg')), $readToolStatus('qmd', $qmd->path, $qmd->environment())],
             'installed' => $qmd->path !== null,
             'indexStatus' => $indexStatus,
             'embedRuns' => $qmdEmbedRuns(),

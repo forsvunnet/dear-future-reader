@@ -26,7 +26,7 @@ function fakeQmd(string $home, string $code): string
     $path = "$home/qmd";
     file_put_contents($path, "#!/bin/sh\necho \"\$@\" >> \"\$0.args\"\n$code\n");
     chmod($path, 0755);
-    app()->instance(Qmd::class, new Qmd($path, 'dfr'));
+    app()->instance(Qmd::class, new Qmd($path, 'dfr', null));
 
     return $path;
 }
@@ -50,6 +50,30 @@ it('shows the things and files that QMD finds, and skips the things that are gon
     expect(file_get_contents("$qmd.args"))->toBe("--index dfr query how do people sign in --no-rerank --format json -n 20 -c things\n");
 });
 
+it('runs qmd with the node that the app found, also when node is not on the PATH of the web server', function () {
+    // The fake node runs the fake qmd as a shell script. Another node fails on it.
+    mkdir("$this->home/node-bin");
+    file_put_contents("$this->home/node-bin/node", "#!/bin/sh\nexec /bin/sh \"\$@\"\n");
+    chmod("$this->home/node-bin/node", 0755);
+    file_put_contents("$this->home/qmd", "#!/usr/bin/env node\necho 'Indexed by the fake node'\n");
+    chmod("$this->home/qmd", 0755);
+    $this->app->instance(Qmd::class, new Qmd("$this->home/qmd", 'dfr', "$this->home/node-bin/node"));
+
+    Livewire::test(ToolsModal::class)
+        ->call('show')
+        ->call('updateIndex')
+        ->assertSee('Indexed by the fake node')
+        ->assertSee("$this->home/qmd · Indexed by the fake node");
+
+    app(StartQmdEmbed::class)();
+    $deadline = microtime(true) + 5;
+    while (app(QmdEmbedRuns::class)() && microtime(true) < $deadline) {
+        usleep(100_000);
+    }
+
+    expect(file_get_contents("$this->home/embed.log"))->toBe("Indexed by the fake node\n");
+});
+
 it('shows the error when the QMD search fails', function () {
     fakeQmd($this->home, 'echo "no index" >&2; exit 1');
 
@@ -59,7 +83,7 @@ it('shows the error when the QMD search fails', function () {
 });
 
 it('shows no QMD button when qmd is not installed', function () {
-    $this->app->instance(Qmd::class, new Qmd(null, 'dfr'));
+    $this->app->instance(Qmd::class, new Qmd(null, 'dfr', null));
 
     Livewire::test(MeaningSearch::class, ['text' => 'login'])->assertDontSee('Search with QMD');
 });

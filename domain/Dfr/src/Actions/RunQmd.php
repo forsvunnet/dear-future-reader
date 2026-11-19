@@ -22,7 +22,7 @@ class RunQmd
      */
     public function __invoke(array $arguments): string
     {
-        $process = new Process($this->qmd->command($arguments));
+        $process = new Process($this->qmd->command($arguments), null, $this->qmd->environment());
         // ponytail: a fixed limit stops a qmd that hangs. A query on a slow machine can need more.
         $process->setTimeout(60);
         $process->run();

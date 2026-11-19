@@ -32,7 +32,7 @@ class StartQmdEmbed
         $command = implode(' ', array_map(escapeshellarg(...), $this->qmd->command(['embed'])));
         // The shell starts qmd and ends at once. qmd keeps running after the request, because the shell does not wait for it.
         $process = Process::fromShellCommandline("nohup $command > ".escapeshellarg($this->files->logPath).' 2>&1 < /dev/null & echo $!');
-        $process->run();
+        $process->run(null, $this->qmd->environment());
         $pid = trim($process->getOutput());
 
         if (! $process->isSuccessful() || ! ctype_digit($pid)) {

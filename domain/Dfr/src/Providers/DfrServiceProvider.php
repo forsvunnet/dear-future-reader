@@ -77,7 +77,7 @@ class DfrServiceProvider extends ServiceProvider
             return $rg === null ? new FindLinesWithPhp : new FindLinesWithRipgrep($rg);
         });
         // The things have their own QMD index, so the default index of the user stays as it is.
-        $this->app->singleton(Qmd::class, fn () => new Qmd($this->app->make(FindTool::class)('qmd'), 'dfr'));
+        $this->app->singleton(Qmd::class, fn () => new Qmd($this->app->make(FindTool::class)('qmd'), 'dfr', $this->app->make(FindTool::class)('node')));
         $this->app->singleton(QmdEmbedFiles::class, fn () => new QmdEmbedFiles(storage_path('app/dfr-qmd-embed.pid'), storage_path('app/dfr-qmd-embed.log')));
         $this->app->bind(SearchByMeaning::class, SearchByMeaningWithQmd::class);
         // Claude Code keeps its files in CLAUDE_CONFIG_DIR, or in ~/.claude when it is not set.
