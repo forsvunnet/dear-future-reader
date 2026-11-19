@@ -66,14 +66,14 @@
                                 <p>Works out the meaning of each file in the index that has no meaning yet. The search by meaning finds only these files. It takes minutes and runs in the background.</p>
                                 <p class="dfr-muted">
                                     @if ($embedRuns)
-                                        The embed runs now.
+                                        <span class="dfr-spinner" aria-hidden="true"></span>The embed runs now.
                                     @elseif ($indexState !== null)
                                         {{ $indexState->pending === 0 ? 'No file waits.' : $indexState->pending.' '.($indexState->pending === 1 ? 'file waits.' : 'files wait.') }}
                                     @endif
                                 </p>
                             </dd>
                         </dl>
-                        <p wire:loading wire:target="makeIndex,updateIndex,embed" role="status" class="dfr-muted">qmd runs…</p>
+                        <p wire:loading wire:target="makeIndex,updateIndex,embed" role="status" class="dfr-muted"><span class="dfr-spinner" aria-hidden="true"></span>qmd runs…</p>
                         @if ($output !== '')
                             <pre @if ($failed) role="alert" @endif class="dfr-log">{{ $output }}</pre>
                         @endif

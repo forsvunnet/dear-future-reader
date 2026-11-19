@@ -427,3 +427,26 @@
     width: 1.25rem;
     height: 1.25rem;
 }
+
+/* A square that turns while a long action runs. Text next to it says what runs. */
+.dfr-spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 1ch;
+    vertical-align: -0.125em;
+    border: 1px solid var(--dfr-line);
+    border-top-color: var(--dfr-text);
+    animation: dfr-spin 0.8s linear infinite;
+}
+
+@keyframes dfr-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Without motion the square stays still. The text next to it still says what runs. */
+@media (prefers-reduced-motion: reduce) {
+    .dfr-spinner {
+        animation: none;
+    }
+}

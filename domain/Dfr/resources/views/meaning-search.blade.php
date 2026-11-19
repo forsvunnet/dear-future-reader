@@ -3,7 +3,7 @@
         @if ($groups === null)
             <div class="px-4 py-2">
                 <button type="button" wire:click="start" wire:loading.attr="disabled" class="dfr-button">Search with QMD</button>
-                <p wire:loading wire:target="start" role="status" class="dfr-muted">QMD searches by meaning. This takes about ten seconds.</p>
+                <p wire:loading wire:target="start" role="status" class="dfr-muted"><span class="dfr-spinner" aria-hidden="true"></span>QMD searches by meaning. This takes about ten seconds.</p>
             </div>
         @else
             <p class="dfr-label dfr-line border-b px-4 py-2">QMD results</p>
