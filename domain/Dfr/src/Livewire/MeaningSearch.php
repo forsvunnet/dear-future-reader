@@ -6,7 +6,6 @@ namespace Domain\Dfr\Livewire;
 
 use Domain\Dfr\Actions\ListThings;
 use Domain\Dfr\Contracts\SearchByMeaning;
-use Domain\Dfr\Data\LastMeaningSearch;
 use Domain\Dfr\Data\MeaningMatch;
 use Domain\Dfr\ValueObjects\Qmd;
 use Illuminate\Contracts\View\View;
@@ -53,13 +52,13 @@ class MeaningSearch extends Component
             $names[$thing->id] = $thing->name;
         }
 
-        $matches = $this->lastSearch()?->matches;
+        $matches = $this->lastSearch();
         $error = null;
 
         if ($matches === null) {
             try {
                 $matches = $searchByMeaning($this->text);
-                session()->put('dfr.meaning', new LastMeaningSearch($this->text, $matches));
+                $this->saveLastSearch($matches);
             } catch (RuntimeException $exception) {
                 $matches = [];
                 $error = $exception->getMessage();
@@ -79,10 +78,44 @@ class MeaningSearch extends Component
         return view('dfr::meaning-search', ['installed' => true, 'groups' => $groups, 'names' => $names, 'error' => $error]);
     }
 
-    private function lastSearch(): ?LastMeaningSearch
+    /**
+     * The session stores its values as JSON, so the matches go in as plain lists.
+     *
+     * @param  list<MeaningMatch>  $matches
+     */
+    private function saveLastSearch(array $matches): void
+    {
+        session()->put('dfr.meaning', [
+            'text' => $this->text,
+            'matches' => array_map(fn (MeaningMatch $match) => [$match->thingId, $match->file, $match->line, $match->text, $match->score], $matches),
+        ]);
+    }
+
+    /**
+     * The matches of the last search, or null when the last search had another text.
+     *
+     * @return list<MeaningMatch>|null
+     */
+    private function lastSearch(): ?array
     {
         $last = session('dfr.meaning');
 
-        return $last instanceof LastMeaningSearch && $last->text === $this->text ? $last : null;
+        if (data_get($last, 'text') !== $this->text || ! is_array(data_get($last, 'matches'))) {
+            return null;
+        }
+
+        $matches = [];
+
+        foreach (data_get($last, 'matches') as $match) {
+            // A session from an older version of the app can hold another shape.
+            if (! is_array($match) || ! is_string($match[0] ?? null) || ! is_string($match[1] ?? null) || ! is_int($match[2] ?? null) || ! is_string($match[3] ?? null) || ! is_numeric($match[4] ?? null)) {
+                return null;
+            }
+
+            // JSON gives a score of 1.0 back as 1.
+            $matches[] = new MeaningMatch($match[0], $match[1], $match[2], $match[3], (float) $match[4]);
+        }
+
+        return $matches;
     }
 }

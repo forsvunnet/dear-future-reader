@@ -34,7 +34,7 @@ function fakeQmd(string $home, string $code): string
 it('shows the things and files that QMD finds, and skips the things that are gone', function () {
     $id = $this->init('Login page');
     $json = json_encode([
-        ['file' => "qmd://things/$id/plan.md?index=dfr", 'line' => 3, 'snippet' => "@@ -3,2 @@ (2 before, 0 after)\n\nThe login form sends the password."],
+        ['score' => 0.93, 'file' => "qmd://things/$id/plan.md?index=dfr", 'line' => 3, 'snippet' => "@@ -3,2 @@ (2 before, 0 after)\n\nThe login form sends the password."],
         ['file' => 'qmd://things/gone/plan.md?index=dfr', 'line' => 1, 'snippet' => 'Old text'],
     ]);
     $qmd = fakeQmd($this->home, "cat <<'EOF'\n$json\nEOF");
@@ -44,11 +44,11 @@ it('shows the things and files that QMD finds, and skips the things that are gon
         ->call('start')
         ->assertSee('Login page')
         ->assertSee("$id · 1 part")
-        ->assertSee("plan.md:3")
+        ->assertSee("plan.md:3 · score 0.93")
         ->assertSee('The login form sends the password.')
         ->assertDontSee('Old text');
 
-    expect(file_get_contents("$qmd.args"))->toBe("--index dfr query how do people sign in --no-rerank --format json -n 20 -c things\n");
+    expect(file_get_contents("$qmd.args"))->toBe("--index dfr query how do people sign in --format json -n 20 -c things\n");
 });
 
 it('runs qmd with the node that the app found, also when node is not on the PATH of the web server', function () {
@@ -96,13 +96,16 @@ it('starts the embed when the web server gives PHP no PATH', function () {
 
 it('keeps the QMD results when a new page opens, and does not run qmd again', function () {
     $id = $this->init('Login page');
-    $json = json_encode([['file' => "qmd://things/$id/plan.md?index=dfr", 'line' => 3, 'snippet' => 'The login form sends the password.']]);
+    $json = json_encode([['score' => 1, 'file' => "qmd://things/$id/plan.md?index=dfr", 'line' => 3, 'snippet' => 'The login form sends the password.']]);
     $qmd = fakeQmd($this->home, "cat <<'EOF'\n$json\nEOF");
 
     Livewire::test(MeaningSearch::class, ['text' => 'login'])->call('start');
+    // The app stores the session as JSON, so the next page gets the values back as plain data.
+    session()->put('dfr.meaning', json_decode((string) json_encode(session('dfr.meaning')), true));
 
     Livewire::test(MeaningSearch::class, ['text' => 'login'])
         ->assertSee('The login form sends the password.')
+        ->assertSee('score 1.00')
         ->assertDontSee('Search with QMD');
     Livewire::test(MeaningSearch::class, ['text' => 'other text'])->assertSee('Search with QMD');
 

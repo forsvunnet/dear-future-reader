@@ -230,7 +230,7 @@ Then open http://localhost:8000. Run `npm run build` first if `public/build/` do
 - The sidebar lists the things as a tree, with the ID, the name and the time of the last command. The most recently active thing is first. A parent moves up when one of its children is active. The sidebar updates every 30 seconds.
 - The sidebar shows the folder names of the projects of each thing.
 - The search box at the top of the sidebar finds things in all projects, the same as `dfr search`. The results show the first lines that match in each thing. The search text stays when you open a result.
-- Under the search results, **Search with QMD** searches the things by meaning. It takes a few seconds, so it runs only when you click it. The button shows only when `qmd` is installed.
+- Under the search results, **Search with QMD** searches the things by meaning. It takes about ten seconds, so it runs only when you click it. Each result shows a score from 0 to 1 for how well it fits. The button shows only when `qmd` is installed.
 - The cog in the bottom right of each page opens the search tools. It shows where `rg` and `qmd` are and their versions. It also shows the status of the QMD index and has these buttons:
   - **Make index** adds the things to the QMD index and indexes the files. Click it once.
   - **Update** indexes the new and changed files.

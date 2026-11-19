@@ -3,7 +3,7 @@
         @if ($groups === null)
             <div class="px-4 py-2">
                 <button type="button" wire:click="start" wire:loading.attr="disabled" class="dfr-button">Search with QMD</button>
-                <p wire:loading wire:target="start" role="status" class="dfr-muted">QMD searches by meaning. This takes a few seconds.</p>
+                <p wire:loading wire:target="start" role="status" class="dfr-muted">QMD searches by meaning. This takes about ten seconds.</p>
             </div>
         @else
             <p class="dfr-label dfr-line border-b px-4 py-2">QMD results</p>
@@ -20,7 +20,7 @@
                                 <span class="dfr-muted block">{{ $thingId }} · {{ count($matches) }} {{ count($matches) === 1 ? 'part' : 'parts' }}</span>
                                 @foreach ($matches as $match)
                                     <span class="mt-1 block">
-                                        <span class="dfr-muted block">{{ $match->file }}:{{ $match->line }}</span>
+                                        <span class="dfr-muted block">{{ $match->file }}:{{ $match->line }} · score {{ number_format($match->score, 2) }}</span>
                                         {{-- ponytail: three lines keep the list short. QMD cuts the snippet at about 300 characters. --}}
                                         <span class="dfr-muted line-clamp-3 block whitespace-pre-line" title="{{ $match->text }}">{{ $match->text }}</span>
                                     </span>

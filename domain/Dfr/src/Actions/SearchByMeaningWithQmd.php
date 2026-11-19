@@ -19,8 +19,8 @@ class SearchByMeaningWithQmd implements SearchByMeaning
 
     public function __invoke(string $text): array
     {
-        // --no-rerank: the rerank makes a query about three times slower.
-        $results = json_decode(($this->runQmd)(['query', $text, '--no-rerank', '--format', 'json', '-n', '20', '-c', 'things']), true);
+        // The rerank makes the query take about ten seconds, but without it the score is only 1 divided by the rank.
+        $results = json_decode(($this->runQmd)(['query', $text, '--format', 'json', '-n', '20', '-c', 'things']), true);
 
         if (! is_array($results)) {
             throw new RuntimeException('qmd gave no JSON.');
@@ -32,13 +32,14 @@ class SearchByMeaningWithQmd implements SearchByMeaning
             $file = data_get($result, 'file');
             $line = data_get($result, 'line');
             $snippet = data_get($result, 'snippet');
+            $score = data_get($result, 'score');
 
             // The file is like qmd://things/abc/plan.md?index=dfr. The first folder is the thing ID.
             if (! is_string($file) || ! preg_match('#^qmd://things/([^/]+)/([^/?]+)#', $file, $parts)) {
                 continue;
             }
 
-            $matches[] = new MeaningMatch($parts[1], $parts[2], is_int($line) ? $line : 1, is_string($snippet) ? $this->snippetText($snippet) : '');
+            $matches[] = new MeaningMatch($parts[1], $parts[2], is_int($line) ? $line : 1, is_string($snippet) ? $this->snippetText($snippet) : '', is_int($score) || is_float($score) ? (float) $score : 0.0);
         }
 
         return $matches;
