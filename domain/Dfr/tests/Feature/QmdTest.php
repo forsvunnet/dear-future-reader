@@ -74,6 +74,25 @@ it('runs qmd with the node that the app found, also when node is not on the PATH
     expect(file_get_contents("$this->home/embed.log"))->toBe("Indexed by the fake node\n");
 });
 
+it('starts the embed when the web server gives PHP no PATH', function () {
+    fakeQmd($this->home, 'echo "Embedded"');
+    $this->app->instance(Qmd::class, new Qmd("$this->home/qmd", 'dfr', '/opt/homebrew/bin/node'));
+    $path = getenv('PATH');
+    putenv('PATH');
+
+    try {
+        app(StartQmdEmbed::class)();
+        $deadline = microtime(true) + 5;
+        while (app(QmdEmbedRuns::class)() && microtime(true) < $deadline) {
+            usleep(100_000);
+        }
+    } finally {
+        putenv("PATH=$path");
+    }
+
+    expect(file_get_contents("$this->home/embed.log"))->toBe("Embedded\n");
+});
+
 it('shows the error when the QMD search fails', function () {
     fakeQmd($this->home, 'echo "no index" >&2; exit 1');
 
@@ -106,6 +125,40 @@ it('shows the tools and the index status in the modal', function () {
         ->assertSee('358 files indexed')
         ->call('close')
         ->assertDontSee('358 files indexed');
+});
+
+it('shows the state of the index next to each button', function () {
+    $id = $this->init('Login page');
+    $this->dfr([$id, 'write', 'plan.md'], "# Plan\n");
+    $status = <<<'TEXT'
+        Documents
+          Total:    2 files indexed
+          Vectors:  1 embedded
+          Pending:  1 need embedding (run 'qmd embed')
+          Updated:  12m ago
+
+        Collections
+          things (qmd://things/)
+            Pattern:  */*.{md,log}
+        TEXT;
+    fakeQmd($this->home, "[ \"\$3\" = status ] && cat <<'EOF'\n$status\nEOF\nexit 0");
+    $fileCount = count(glob($this->thingFolder($id).'/*.{md,log}', GLOB_BRACE) ?: []);
+
+    Livewire::test(ToolsModal::class)
+        ->call('show')
+        ->assertSee('The index is made.')
+        ->assertSee('The index has 2 files, updated 12m ago.')
+        ->assertSee("The things have $fileCount ".($fileCount === 1 ? 'file' : 'files').', changed last')
+        ->assertSee('1 file waits.');
+});
+
+it('shows when the index is not made and no file waits', function () {
+    fakeQmd($this->home, '[ "$3" = status ] && echo "  Total:    0 files indexed"; exit 0');
+
+    Livewire::test(ToolsModal::class)
+        ->call('show')
+        ->assertSee('The index is not made.')
+        ->assertSee('No file waits.');
 });
 
 it('makes the index over the context files of the things', function () {

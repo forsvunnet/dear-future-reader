@@ -10,7 +10,7 @@
             @if ($error !== null)
                 <p role="alert" class="px-4 py-2">The QMD search failed: {{ $error }}</p>
             @elseif ($matches === [])
-                <p class="px-4 py-2">QMD found nothing. Open the cog in the bottom right to make or update the index.</p>
+                <p class="px-4 py-2">QMD found nothing. The cog in the bottom right shows the state of the QMD index.</p>
             @else
                 <ul>
                     @foreach ($matches as $match)

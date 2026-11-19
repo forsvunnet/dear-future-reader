@@ -37,7 +37,7 @@ readonly class Qmd
 
     /**
      * The environment variables for a qmd process. qmd starts with "#!/usr/bin/env node", so the folder of node goes first on the PATH.
-     * A web server like Herd runs PHP with a short PATH that does not have node.
+     * A web server like Herd runs PHP with no PATH or a short one, so the standard system folders are the fallback.
      *
      * @return array<string, string>
      */
@@ -47,6 +47,6 @@ readonly class Qmd
             return [];
         }
 
-        return ['PATH' => dirname($this->node).PATH_SEPARATOR.getenv('PATH')];
+        return ['PATH' => dirname($this->node).PATH_SEPARATOR.(getenv('PATH') ?: '/usr/bin:/bin:/usr/sbin:/sbin')];
     }
 }

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Domain\Dfr\Livewire;
 
+use Domain\Dfr\Actions\FindQmdFiles;
 use Domain\Dfr\Actions\FindTool;
 use Domain\Dfr\Actions\MakeQmdIndex;
+use Domain\Dfr\Actions\ParseQmdStatus;
 use Domain\Dfr\Actions\QmdEmbedRuns;
 use Domain\Dfr\Actions\ReadQmdIndexStatus;
 use Domain\Dfr\Actions\ReadToolStatus;
@@ -14,6 +16,7 @@ use Domain\Dfr\Actions\UpdateQmdIndex;
 use Domain\Dfr\ValueObjects\Qmd;
 use Domain\Dfr\ValueObjects\QmdEmbedFiles;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
 use Livewire\Component;
 use RuntimeException;
 
@@ -74,21 +77,26 @@ class ToolsModal extends Component
         }
     }
 
-    public function render(FindTool $findTool, ReadToolStatus $readToolStatus, Qmd $qmd, ReadQmdIndexStatus $readQmdIndexStatus, QmdEmbedRuns $qmdEmbedRuns, QmdEmbedFiles $embedFiles): View
+    public function render(FindTool $findTool, ReadToolStatus $readToolStatus, Qmd $qmd, ReadQmdIndexStatus $readQmdIndexStatus, ParseQmdStatus $parseQmdStatus, FindQmdFiles $findQmdFiles, QmdEmbedRuns $qmdEmbedRuns, QmdEmbedFiles $embedFiles): View
     {
         if (! $this->open) {
             return view('dfr::tools-modal');
         }
 
         $indexStatus = null;
+        $indexState = null;
         $embedLog = '';
+        $thingFiles = [];
 
         if ($qmd->path !== null) {
             try {
                 $indexStatus = trim($readQmdIndexStatus());
+                $indexState = $parseQmdStatus($indexStatus);
             } catch (RuntimeException $exception) {
                 $indexStatus = $exception->getMessage();
             }
+
+            $thingFiles = $findQmdFiles();
 
             $log = is_file($embedFiles->logPath) ? (string) file_get_contents($embedFiles->logPath) : '';
             // qmd draws its progress bar with carriage returns. Only the text after the last one in a line is on the screen.
@@ -106,6 +114,9 @@ class ToolsModal extends Component
             'tools' => [$readToolStatus('rg', $findTool('rg')), $readToolStatus('qmd', $qmd->path, $qmd->environment())],
             'installed' => $qmd->path !== null,
             'indexStatus' => $indexStatus,
+            'indexState' => $indexState,
+            'thingFileCount' => count($thingFiles),
+            'lastChange' => $thingFiles === [] ? null : Carbon::createFromTimestamp(max(array_map(fn (string $path) => (int) filemtime($path), $thingFiles))),
             'embedRuns' => $qmdEmbedRuns(),
             'embedLog' => $embedLog,
         ]);
