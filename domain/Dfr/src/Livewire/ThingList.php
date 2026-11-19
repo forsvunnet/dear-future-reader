@@ -7,6 +7,7 @@ namespace Domain\Dfr\Livewire;
 use Domain\Dfr\Actions\LastActive;
 use Domain\Dfr\Actions\ListThings;
 use Domain\Dfr\Actions\ProjectsByRecentActivity;
+use Domain\Dfr\Actions\SearchThings;
 use Domain\Dfr\Actions\SortAsTree;
 use Domain\Dfr\Actions\SortByRecentActivity;
 use Domain\Dfr\Actions\ThingProjects;
@@ -21,12 +22,28 @@ use Livewire\Component;
  *
  * The session keeps the selected project, so the sidebar stays on the same level when a new page opens.
  * Without the session key the sidebar shows the projects. A null value selects all projects.
+ *
+ * A search text puts the search results in place of both levels. The session keeps the search text too,
+ * so the results stay when a result opens.
  */
 class ThingList extends Component
 {
     /** The ID of the thing that the page shows, or null on the start page. */
     #[Locked]
     public ?string $current = null;
+
+    public string $search = '';
+
+    public function mount(): void
+    {
+        $search = session('dfr.search');
+        $this->search = is_string($search) ? $search : '';
+    }
+
+    public function updatedSearch(): void
+    {
+        session()->put('dfr.search', $this->search);
+    }
 
     public function selectProject(?string $path): void
     {
@@ -38,8 +55,15 @@ class ThingList extends Component
         session()->forget('dfr.project');
     }
 
-    public function render(ListThings $listThings, LastActive $lastActive, SortByRecentActivity $sortByRecentActivity, SortAsTree $sortAsTree, ThingProjects $thingProjects, ProjectsByRecentActivity $projectsByRecentActivity): View
+    public function render(ListThings $listThings, LastActive $lastActive, SortByRecentActivity $sortByRecentActivity, SortAsTree $sortAsTree, ThingProjects $thingProjects, ProjectsByRecentActivity $projectsByRecentActivity, SearchThings $searchThings): View
     {
+        if (trim($this->search) !== '') {
+            return view('dfr::thing-list', [
+                'level' => 'search',
+                'results' => $searchThings($this->search),
+            ]);
+        }
+
         $things = $listThings();
         $times = [];
         $paths = [];

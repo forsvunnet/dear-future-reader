@@ -26,7 +26,8 @@ Dear Future Reader is a Laravel 13 app on the TALL stack: Tailwind, Alpine.js, L
 
 1. Clone the repository.
 2. Run `composer install` and `npm install`.
-3. Add the `dfr` script in the project root to your `PATH`.
+3. Install ripgrep, for example with `brew install ripgrep`. The search uses it.
+4. Add the `dfr` script in the project root to your `PATH`.
 
 The `dfr` script calls `php artisan` inside the project.
 
@@ -57,7 +58,7 @@ dfr init [NAME]                         # Make a new thing and show its ID.
 dfr init [NAME] --parent [PARENT_ID]    # Make a new thing as a child of another thing.
 dfr list                                # List all things with their IDs.
 dfr list --tree                         # Show the things as a tree, with each child under its parent.
-dfr search [TEXT]                       # Find text in the context files of all things.
+dfr search [WORDS...]                   # Find the things that contain all the words.
 dfr $ID rename [NAME]                   # Change the name of the thing. The ID stays the same.
 dfr $ID log                             # Show which session ran which command on the thing, and when.
 dfr $ID parent [PARENT_ID]              # Make the thing a child of another thing.
@@ -74,7 +75,11 @@ A thing relates to projects. A project is a git repository: the repository where
 
 `list` shows one thing on each line: the ID, the name and the projects, with a tab between them. The projects show as folder names, with ", " between them. A thing with no projects has no projects column. `--tree` puts each child under its parent, with two spaces of indent for each level. `--tree` does not work together with `--json`.
 
-`search` ignores case. It shows one match on each line: the ID, the filename, the line number and the line, with a tab between them. It does not search archived files.
+`search` finds the things where each word is in the context files, the name or the project names. The words can be on different lines and in different files. It ignores case and takes the words as plain text. It does not search archived files. It needs [ripgrep](https://github.com/BurntSushi/ripgrep), the `rg` command.
+
+The things where the name contains all the words come first. Then the things with the most matched lines come first.
+
+For each thing, `search` shows a line with the ID and the name. Then it shows one line for each line that contains a word: the ID, the filename, the line number and the line. A tab is between the columns. `search --json` gives each thing with its matches.
 
 `log` shows one command on each line: the time in UTC, the session, the exit code and the command, with a tab between them. A failed command is in the log too. `init` is not in the log.
 
@@ -223,6 +228,7 @@ Then open http://localhost:8000. Run `npm run build` first if `public/build/` do
 
 - The sidebar lists the things as a tree, with the ID, the name and the time of the last command. The most recently active thing is first. A parent moves up when one of its children is active. The sidebar updates every 30 seconds.
 - The sidebar shows the folder names of the projects of each thing.
+- The search box at the top of the sidebar finds things in all projects, the same as `dfr search`. The results show the first lines that match in each thing. The search text stays when you open a result.
 - The page of a thing shows the full paths of its projects.
 - The page of a thing shows its context files in order. The body shows as Markdown, and the frontmatter as YAML. Archived files do not show.
 - The header of a file with todo items shows how many are ticked, like `2/3`.

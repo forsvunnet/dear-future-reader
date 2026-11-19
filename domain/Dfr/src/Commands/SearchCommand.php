@@ -11,9 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SearchCommand extends Command
 {
-    protected $signature = 'dfr:search {text : The text to find. Case is ignored.} {--json : Show the output as JSON}';
+    protected $signature = 'dfr:search {text* : The words to find. Case is ignored.} {--json : Show the output as JSON}';
 
-    protected $description = 'Find text in the context files of all things.';
+    protected $description = 'Find the things that contain all the words.';
 
     public function __construct(
         private SearchThings $searchThings,
@@ -24,7 +24,7 @@ class SearchCommand extends Command
 
     public function handle(): int
     {
-        $text = $this->argument('text');
+        $text = implode(' ', $this->argument('text'));
 
         if (trim($text) === '') {
             $this->output->getErrorStyle()->writeln('Give a text to find.');
@@ -32,16 +32,20 @@ class SearchCommand extends Command
             return 1;
         }
 
-        $matches = ($this->searchThings)($text);
+        $results = ($this->searchThings)($text);
 
         if ($this->option('json')) {
-            $this->output->writeln(($this->encodeJson)($matches), OutputInterface::OUTPUT_RAW);
+            $this->output->writeln(($this->encodeJson)($results), OutputInterface::OUTPUT_RAW);
 
             return 0;
         }
 
-        foreach ($matches as $match) {
-            $this->output->writeln("$match->id\t$match->file\t$match->line\t$match->text", OutputInterface::OUTPUT_RAW);
+        foreach ($results as $result) {
+            $this->output->writeln("$result->id\t$result->name", OutputInterface::OUTPUT_RAW);
+
+            foreach ($result->matches as $match) {
+                $this->output->writeln("$result->id\t$match->file\t$match->line\t$match->text", OutputInterface::OUTPUT_RAW);
+            }
         }
 
         return 0;

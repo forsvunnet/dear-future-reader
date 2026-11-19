@@ -6,6 +6,7 @@ namespace Domain\Dfr\Providers;
 
 use Domain\Dfr\Actions\FindGitCommitWithGit;
 use Domain\Dfr\Actions\FindGitRepositoryWithGit;
+use Domain\Dfr\Actions\FindLinesWithRipgrep;
 use Domain\Dfr\Actions\LoadThingsRoot;
 use Domain\Dfr\Actions\OpenFolderInFinder;
 use Domain\Dfr\Actions\ReadGitCommitChangesWithGit;
@@ -44,6 +45,7 @@ use Domain\Dfr\Commands\WorkLogCommand;
 use Domain\Dfr\Commands\WritePrependCommand;
 use Domain\Dfr\Contracts\FindGitCommit;
 use Domain\Dfr\Contracts\FindGitRepository;
+use Domain\Dfr\Contracts\FindLines;
 use Domain\Dfr\Contracts\OpenFolder;
 use Domain\Dfr\Contracts\ReadGitCommitChanges;
 use Domain\Dfr\Contracts\ReadGitCommitHeader;
@@ -62,6 +64,7 @@ class DfrServiceProvider extends ServiceProvider
         $this->app->bind(ReadGitCommitHeader::class, ReadGitCommitHeaderWithGit::class);
         $this->app->bind(ReadGitCommitChanges::class, ReadGitCommitChangesWithGit::class);
         $this->app->bind(OpenFolder::class, OpenFolderInFinder::class);
+        $this->app->bind(FindLines::class, FindLinesWithRipgrep::class);
         // Claude Code keeps its files in CLAUDE_CONFIG_DIR, or in ~/.claude when it is not set.
         $this->app->bind(ReadSessionTitle::class, fn () => new ReadSessionTitleFromClaudeCode(
             (string) (getenv('CLAUDE_CONFIG_DIR') ?: getenv('HOME').'/.claude'),

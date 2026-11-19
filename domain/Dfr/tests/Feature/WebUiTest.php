@@ -442,3 +442,34 @@ it('lists the sessions of a thing under the projects', function () {
         ->assertSeeInOrder(['Projects', realpath($repository), 'Sessions', 'bbb-2', 'Fix the cart'])
         ->assertDontSee('>unknown<', false);
 });
+
+it('shows the search results in the sidebar, with the lines that match', function () {
+    $match = $this->init('Login page');
+    $other = $this->init('Other thing');
+    $this->dfr([$match, 'write', 'plan.md'], "Add the login button\n");
+    $this->dfr([$other, 'write', 'plan.md'], "Nothing here\n");
+
+    Livewire::test(ThingList::class)
+        ->set('search', 'login button')
+        ->assertSee('Login page')
+        ->assertSee('plan.md:1 Add the login button')
+        ->assertDontSee('Other thing');
+});
+
+it('keeps the search text in the session, so the results stay on the next page', function () {
+    $this->init('Login page');
+
+    Livewire::test(ThingList::class)->set('search', 'login');
+
+    Livewire::test(ThingList::class)
+        ->assertSet('search', 'login')
+        ->assertSee('Login page');
+});
+
+it('says so when no thing matches the search', function () {
+    $this->init('Login page');
+
+    Livewire::test(ThingList::class)
+        ->set('search', 'nothing')
+        ->assertSee('No thing contains all the words.');
+});

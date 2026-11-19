@@ -1,6 +1,38 @@
 {{-- The poll keeps the times and the order up to date while sessions work. --}}
 <nav aria-label="Things" wire:poll.30s>
-    @if ($level === 'projects')
+    <div class="dfr-line border-b px-4 py-2">
+        <label for="dfr-search" class="sr-only">Search the things</label>
+        <input id="dfr-search" type="search" wire:model.live.debounce.300ms="search" placeholder="Search" autocomplete="off" class="dfr-input w-full">
+    </div>
+    @if ($level === 'search')
+        @if ($results === [])
+            <p class="px-4 py-2">No thing contains all the words.</p>
+        @else
+            <ul>
+                @foreach ($results as $result)
+                    <li class="dfr-line border-b">
+                        <a
+                            href="{{ route('dfr.thing', $result->id) }}"
+                            @if ($result->id === $current) aria-current="page" @endif
+                            class="dfr-sidebar-link block px-4 py-2"
+                        >
+                            <span class="block">{{ $result->name }}</span>
+                            <span class="dfr-muted block">
+                                {{ $result->id }}
+                                @if ($result->matches !== [])
+                                    · {{ count($result->matches) }} {{ count($result->matches) === 1 ? 'line' : 'lines' }}
+                                @endif
+                            </span>
+                            {{-- ponytail: three lines keep the list short. To see all lines, run dfr search. --}}
+                            @foreach (array_slice($result->matches, 0, 3) as $match)
+                                <span class="dfr-muted block truncate" title="{{ $match->text }}">{{ $match->file }}:{{ $match->line }} {{ trim($match->text) }}</span>
+                            @endforeach
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    @elseif ($level === 'projects')
         @if (! $hasThings)
             <p class="px-4 py-2">There are no things. Make one with <code>dfr init "name"</code>.</p>
         @else
