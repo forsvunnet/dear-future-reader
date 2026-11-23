@@ -472,3 +472,10 @@
         mix-blend-mode: multiply;
     }
 }
+
+/* The grain is drawn new on each scroll, and that is motion. */
+@media (prefers-reduced-motion: reduce) {
+    .dfr-film {
+        display: none;
+    }
+}
