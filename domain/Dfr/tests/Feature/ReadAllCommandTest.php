@@ -73,3 +73,20 @@ it('shows the projects before the files', function () {
     expect($this->dfr([$id, 'read:all'])->getOutput())
         ->toBe('Projects: '.realpath($repository)."\n\n==> plan.md <==\nthe plan\n");
 });
+
+it('shows only the name and size of a file larger than 20 KB', function () {
+    $id = $this->init();
+    file_put_contents($this->thingFolder($id).'/rows.csv', str_repeat('a', 30 * 1024));
+    $this->dfr([$id, 'write', 'plan.md', 'the plan']);
+
+    expect($this->dfr([$id, 'read:all'])->getOutput())
+        ->toBe("==> plan.md <==\nthe plan\n\n==> rows.csv <==\n(30 KB, left out. Run `dfr $id read rows.csv` to see it.)\n");
+});
+
+it('shows a file larger than 20 KB in full as JSON', function () {
+    $id = $this->init();
+    file_put_contents($this->thingFolder($id).'/rows.csv', str_repeat('a', 30 * 1024));
+
+    expect(json_decode($this->dfr([$id, 'read:all', '--json'])->getOutput(), true)[0]['body'])
+        ->toBe(str_repeat('a', 30 * 1024));
+});

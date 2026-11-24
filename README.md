@@ -102,6 +102,8 @@ When the thing has projects, `read:all` starts with a line like `Projects: /path
 
 `read:all` shows only the last session of `work.log`, the part from the last session line. A note at the top says how many sessions it left out. `read work.log` shows all of it.
 
+`read:all` leaves out each other file larger than 20 KB, like a data export. It shows the size and the `read` command for the file. `read:all --json` shows all files in full.
+
 ### Write
 
 ```shell

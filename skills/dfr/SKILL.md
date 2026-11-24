@@ -46,6 +46,8 @@ dfr $ID read:all
 
 Read all of the output before you do other work. Then continue from the next step in the files.
 
+`read:all` leaves out a file larger than 20 KB and shows its size. Read that file with `dfr $ID read FILE` only when the work needs it.
+
 The first line of the output can name the projects of the thing. A project is the folder of a git repository. Work in those folders.
 
 When the user gives no ID and no hook names a thing, make a new thing:

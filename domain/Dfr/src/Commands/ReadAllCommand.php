@@ -53,6 +53,10 @@ class ReadAllCommand extends Command
                     $content = $document->frontmatter ?? '';
                 } elseif ($fileName === 'work.log') {
                     $content = ($this->keepLastSession)($content, $thing->id);
+                } elseif (strlen($content) > 20 * 1024) {
+                    // A large file, like a data export, would fill the context of the reader.
+                    $kilobytes = round(strlen($content) / 1024);
+                    $content = "($kilobytes KB, left out. Run `dfr $thing->id read $fileName` to see it.)";
                 }
 
                 // The "==> name <==" header is the same as the header of `head` and `tail` with many files.
