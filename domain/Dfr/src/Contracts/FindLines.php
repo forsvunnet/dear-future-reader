@@ -8,6 +8,7 @@ use Domain\Dfr\Data\FoundLine;
 
 /**
  * Finds the lines in files that contain one or more of the words, with case ignored.
+ * The lines come in the order of the paths, and in line order for each file.
  */
 interface FindLines
 {

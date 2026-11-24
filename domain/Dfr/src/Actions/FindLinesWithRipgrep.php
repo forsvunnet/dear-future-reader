@@ -57,6 +57,11 @@ class FindLinesWithRipgrep implements FindLines
             $lines[] = new FoundLine($path, $number, rtrim($text, "\r\n"));
         }
 
+        // ripgrep searches the files in parallel, so the files come in a random order.
+        // The sort is stable, so the lines of one file keep their order.
+        $order = array_flip($paths);
+        usort($lines, fn (FoundLine $a, FoundLine $b) => ($order[$a->path] ?? PHP_INT_MAX) <=> ($order[$b->path] ?? PHP_INT_MAX));
+
         return $lines;
     }
 }
