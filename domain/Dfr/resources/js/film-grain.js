@@ -11,6 +11,11 @@
 // then cuts the map, so some words get heavy grain and others almost none.
 //
 // The canvas draws white. In light mode CSS inverts it, so the specks are dark.
+//
+// A second canvas draws fine grey grain over all the page. CSS mixes it with
+// mix-blend-mode: overlay. Grey at the middle leaves a pixel as it is, so the
+// grain makes each pixel below a bit lighter or darker: text, images, icons
+// and backgrounds alike.
 
 // One cell of the light map is this many CSS pixels.
 const CELL = 4;
@@ -28,6 +33,13 @@ const canvas = document.createElement('canvas');
 canvas.className = 'dfr-film';
 canvas.setAttribute('aria-hidden', 'true');
 const ctx = canvas.getContext('2d');
+
+// The fine grain over all the page.
+const overlay = document.createElement('canvas');
+overlay.className = 'dfr-grain';
+overlay.setAttribute('aria-hidden', 'true');
+const overlayCtx = overlay.getContext('2d');
+const greyNoise = greyTile(256);
 
 // The shapes of the content, in cells, before the blur.
 const shapes = document.createElement('canvas');
@@ -67,6 +79,24 @@ function noiseTile(size) {
         image.data[i + 1] = 255;
         image.data[i + 2] = 255;
         image.data[i + 3] = Math.random() ** 4 * 255;
+    }
+    tileCtx.putImageData(image, 0, 0);
+    return tile;
+}
+
+// A tile of grey grain around the middle grey, which overlay leaves as it is.
+function greyTile(size) {
+    const tile = document.createElement('canvas');
+    tile.width = size;
+    tile.height = size;
+    const tileCtx = tile.getContext('2d');
+    const image = tileCtx.createImageData(size, size);
+    for (let i = 0; i < image.data.length; i += 4) {
+        const grey = 128 + (Math.random() - 0.5) * 255;
+        image.data[i] = grey;
+        image.data[i + 1] = grey;
+        image.data[i + 2] = grey;
+        image.data[i + 3] = 255;
     }
     tileCtx.putImageData(image, 0, 0);
     return tile;
@@ -124,7 +154,7 @@ function shape(x, y, w, h, level) {
 // ponytail: an element off screen is skipped with its children. A child that
 // sits outside its parent, for example with position: absolute, can be missed.
 function drawElement(element) {
-    if (element === canvas || element instanceof SVGElement) {
+    if (element === canvas || element === overlay || element instanceof SVGElement) {
         return;
     }
     const l = look(element);
@@ -240,11 +270,18 @@ function draw() {
     const w = Math.ceil(innerWidth / CELL);
     const h = Math.ceil(innerHeight / CELL);
     if (canvas.width !== innerWidth || canvas.height !== innerHeight) {
-        canvas.width = grain.width = innerWidth;
-        canvas.height = grain.height = innerHeight;
+        canvas.width = grain.width = overlay.width = innerWidth;
+        canvas.height = grain.height = overlay.height = innerHeight;
         shapes.width = light.width = w;
         shapes.height = light.height = h;
     }
+
+    // The fine grain. A new random offset each time, so the grain changes.
+    overlayCtx.save();
+    overlayCtx.translate(-Math.random() * 256, -Math.random() * 256);
+    overlayCtx.fillStyle = overlayCtx.createPattern(greyNoise, 'repeat');
+    overlayCtx.fillRect(0, 0, overlay.width + 256, overlay.height + 256);
+    overlayCtx.restore();
 
     const levels = drawLight(w, h);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -318,7 +355,7 @@ function onPageChange() {
     queue();
 }
 
-document.body.append(canvas);
+document.body.append(overlay, canvas);
 document.addEventListener('scroll', onScroll, { capture: true, passive: true });
 window.addEventListener('resize', queue);
 darkMode.addEventListener('change', onModeChange);
