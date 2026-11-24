@@ -38,6 +38,10 @@ class TodoAddCommand extends Command
             $texts = $this->argument('items');
 
             $errors = ($this->changeTodos)($thing, function (array $lists) use ($thing, $name, $texts) {
+                if ($name === null && $lists === []) {
+                    return new TodoChange(['todo.md' => ($this->addTodoList)($thing, 'Todo', $texts)], []);
+                }
+
                 if ($name !== null && ($this->matchTodoLists)($lists, $name) === []) {
                     return new TodoChange(['todo.md' => ($this->addTodoList)($thing, $name, $texts)], []);
                 }

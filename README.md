@@ -149,8 +149,9 @@ The `--list` flag is optional. It gives the name of the todo list.
 
 - With `--list`, the command looks only in that todo list.
 - Without `--list`, the command looks in all todo lists. Each argument must then match one unique line across all lists.
-- Without `--list`, `add` and `next` need exactly one todo list in the thing. If there are more, the command fails.
+- Without `--list`, `add` and `next` need one todo list in the thing. If there are more, the command fails.
 - When no list matches `--list`, `add` makes a new list with a `##` title at the end of `todo.md`.
+- When the thing has no todo list and there is no `--list`, `add` makes the list `## Todo` in `todo.md`.
 
 An argument matches an item when the item contains the argument, with case ignored. When an item is equal to the argument, only that item matches. The `--list` name matches a title with the same rule.
 
